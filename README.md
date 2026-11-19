@@ -39,7 +39,7 @@ Simulated experiments use a physics-based simulator with known ground truth; eve
 | Same, at 0 dB SNR with the striker visible | fused **100 %** against 22 % for audio alone |
 | Tune by sight, raga Bhupali (one verification tap) | mean error 12.7 → **8.4 cents** (near-identical glasses); 68.2 → **12.9 cents** when glasses differ by 3 % |
 | Real recordings | ObjectFolder Real glass #91: modes found, resynthesis, LPC poles (`results/figures/e1_real_strike_91.png`) |
-| Live app, scripted end-to-end self-test | 8 of 8 strikes identified; tuned glass within 20 cents |
+| Live app, scripted end-to-end self-test | 8 of 8 strikes identified in every run; after one correction tap the tuned bowl ends 20-25 cents from its note |
 
 ## Quick start
 

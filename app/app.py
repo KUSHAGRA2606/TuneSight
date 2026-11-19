@@ -89,6 +89,7 @@ class LiveSource:
 
     def close(self):
         self.stream.stop()
+        self.stream.close()
         self.cap.release()
 
 
@@ -668,6 +669,11 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def closeEvent(self, e):
         self.timer.stop()
+        if sd is not None:
+            try:
+                sd.stop()              # end any playback before PortAudio shuts down
+            except Exception:
+                pass
         self.src.close()
         super().closeEvent(e)
 
@@ -692,7 +698,13 @@ def main():
         _schedule_selftest(w)
     elif a.autoclose > 0:
         QtCore.QTimer.singleShot(int(a.autoclose * 1000), w.close)
-    sys.exit(app.exec())
+    code = app.exec()
+    # Tear down in a safe order: the window and its plots first, then the QApplication. Leaving it to the
+    # interpreter freed main()'s locals in arbitrary order and crashed now and then on exit (Windows).
+    w.deleteLater()
+    QtCore.QCoreApplication.sendPostedEvents(None, QtCore.QEvent.Type.DeferredDelete)
+    app.shutdown()
+    sys.exit(code)
 
 
 def _with_fill(b, f):
