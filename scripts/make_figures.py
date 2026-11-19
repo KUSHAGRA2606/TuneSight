@@ -63,6 +63,9 @@ def fig_strike():
         x = A.load_audio(wav)
         an = A.analyze_strike(x, fmin=150.0)
         label = f"REAL: ObjectFolder #{obj} {OF.OBJECTS[obj][0].replace('_', ' ')}"
+    elif (PDF_DIR / "fig_strike.pdf").exists():
+        print("   fig_strike kept (real ObjectFolder data not downloaded; the committed figure uses it)")
+        return
     else:
         x = SIM.synth_strike(SIM.SimBowl(x_cm=10), 0.4, seed=3)
         an = A.analyze_strike(x)
@@ -207,6 +210,92 @@ def fig_law(M):
     _draw_law(axs, b, fills, pitches, cal, tall=True)
     fig.tight_layout(h_pad=0.5)
     save(fig, "fig_law_tall", web=False)
+    fig_evidence(cal)
+
+
+def fig_evidence(cal):
+    """Model evidence over French's exponent n for the same taps: the data choose n close to 4."""
+    ns = P.N_GRID
+    ev = np.array([max(cal._blr(n, r0, True)[2] for r0 in P.R0_GRID) for n in ns])   # best base offset per n
+    post = ev - 0.5 * ((ns - C.FRENCH_N) / 1.0) ** 2                                   # + prior n ~ N(4, 1)
+    fig, ax = plt.subplots(figsize=(2.6, 1.95))
+    prior = -0.5 * ((ns - C.FRENCH_N) / 1.0) ** 2
+    ax.plot(ns, ev - ev.max(), "o-", color=BLUE, ms=2.5, lw=1.2, label="data: log evidence")
+    ax.plot(ns, prior, "--", color=GREY, lw=1.0, label="prior: n ~ N(4, 1)")
+    nb = float(ns[np.argmax(post)])
+    ax.axvline(4.0, color=GREY, ls=":", lw=1)
+    ax.annotate(f"chosen n = {nb:.2f}", (nb, 0), xytext=(nb + 0.5, -5), fontsize=6.5, color=RED,
+                arrowprops=dict(arrowstyle="->", color=RED, lw=0.7))
+    ax.text(3.92, 1.0, "theory n = 4", fontsize=6, color=GREY, ha="right", va="bottom")
+    ax.set(xlabel="exponent n", ylabel="log probability (relative)", xlim=(2.4, 6.6), ylim=(-30, 4),
+           title="the taps choose French's exponent")
+    ax.legend(loc="lower right", frameon=False, fontsize=6)
+    tag(ax, "SIMULATED")
+    fig.tight_layout()
+    save(fig, "fig_evidence", web=False)
+
+
+def fig_burg():
+    """Burg vs covariance-method LPC on a decaying 3-mode ring with known damping (40 dB SNR)."""
+    sr = 20000
+    t = np.arange(int(0.4 * sr)) / sr
+    f_true, s_true = np.array([1100.0, 2650.0, 4300.0]), np.array([4.2, 10.0, 16.0])
+    rng = np.random.default_rng(0)
+    y = sum(a * np.exp(-s * t) * np.cos(2 * np.pi * f * t + p)
+            for a, s, f, p in zip([1.0, 0.6, 0.4], s_true, f_true, rng.uniform(0, 2 * np.pi, 3)))
+    y = y + rng.normal(0, np.std(y) * 10 ** (-40 / 20), len(y))
+    y = y / np.abs(y).max()
+
+    def damping(a):
+        r = np.roots(a)
+        up = r[np.imag(r) > 0]
+        fr, sg = np.angle(up) * sr / (2 * np.pi), -np.log(np.abs(up)) * sr
+        return np.array([sg[np.argmin(np.abs(fr - f0))] for f0 in f_true])
+
+    s_cov, s_burg = damping(A.covariance_lpc(y, 32, rank=12)), damping(A.burg_lpc(y, 32))
+    fig, axs = plt.subplots(1, 2, figsize=(5.0, 1.85), gridspec_kw=dict(width_ratios=[1.2, 1]))
+    tt = np.linspace(0, 0.4, 200)
+    axs[0].plot(t, y, color="#C9D3E0", lw=0.3)
+    for s, c, lab, ls in ((s_true[0], GREY, "true", "-"), (s_cov[0], GREEN, "covariance LPC", "--"), (s_burg[0], RED, "Burg", "-")):
+        axs[0].plot(tt, np.exp(-s * tt), color=c, ls=ls, lw=1.5, label=f"{lab}: sigma = {s:.2f} /s")
+    axs[0].set(xlabel="time (s)", ylabel="amplitude", ylim=(-1.05, 2.05), yticks=[-1, 0, 1],
+               title="(a) envelope of the lowest mode")
+    axs[0].legend(loc="upper right", frameon=False, fontsize=6, borderaxespad=0.2)
+    x, w = np.arange(3), 0.26
+    for k, (vals, c, lab) in enumerate(((s_true, GREY, "true"), (s_cov, GREEN, "covariance"), (s_burg, RED, "Burg"))):
+        axs[1].bar(x + (k - 1) * w, vals, w, color=c, label=lab)
+    for i, v in enumerate(s_burg):
+        axs[1].text(i + w, v + 0.4, f"{v:.2f}", ha="center", fontsize=5.5, color=RED)
+    axs[1].set(xticks=x, xticklabels=[f"{f / 1000:.1f} kHz" for f in f_true], ylabel="damping sigma (1/s)",
+               title="(b) damping of each mode")
+    axs[1].legend(loc="upper left", frameon=False, fontsize=6)
+    tag(axs[1], "SIMULATED")
+    fig.tight_layout(w_pad=0.8)
+    save(fig, "fig_burg", web=False)
+
+
+def fig_strikepoint():
+    """REAL: one glass struck at two points: the same lowest mode, but different upper modes."""
+    root = C.DATA_DIR / "objectfolder" / "audio" / "91" / "audio"
+    wavs = sorted(root.glob("*/mic.wav"))[:2] if root.exists() else []
+    if len(wavs) < 2:
+        print("   fig_strikepoint kept (needs ObjectFolder glass #91: scripts/download_objectfolder.py --chunks 91_100)")
+        return
+    fig, ax = plt.subplots(figsize=(5.0, 1.75))
+    for wv, c, off in zip(wavs, (BLUE, ORANGE), (0.0, -80.0)):
+        an = A.analyze_strike(A.load_audio(wv), fmin=150.0)
+        band = (an.spec_f > 100) & (an.spec_f < 8000)
+        ref = an.mags_db.max()
+        ax.plot(an.spec_f[band] / 1000, an.spec_db[band] - ref + off, color=c, lw=0.45, alpha=0.8)
+        ax.plot(an.freqs / 1000, an.mags_db - ref + off, "o", ms=3, color=c,
+                label=f"strike point {wv.parent.name}: lowest mode {an.pitch:.0f} Hz, {len(an.freqs)} modes")
+        ax.axvline(an.pitch / 1000, color=c, ls="--", lw=0.8)
+    ax.set(xlabel="kHz", ylabel="dB (offset)", xlim=(0, 8), ylim=(-215, 12),
+           title="REAL glass #91, two strike points: same pitch, different upper modes")
+    ax.set_yticks([])
+    ax.legend(loc="lower right", frameon=False, fontsize=6, ncol=2, borderaxespad=0.1)
+    fig.tight_layout()
+    save(fig, "fig_strikepoint", web=False)
 
 
 def _draw_law(axs, b, fills, pitches, cal, tall):
@@ -386,6 +475,8 @@ def main():
     if not M:
         print("warning: results/metrics.json missing; run scripts/evaluate.py first")
     fig_strike()
+    fig_strikepoint()
+    fig_burg()
     fig_vision()
     fig_vision_steps()
     fig_law(M)

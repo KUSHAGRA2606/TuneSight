@@ -135,7 +135,8 @@ def e1_real(of_root: Path, max_per_obj=12):
         if len(per_obj.get(obj, [])) >= max_per_obj:
             continue
         x = A.load_audio(wav)
-        an = A.analyze_strike(x, fmin=60.0)
+        # the app's band: lines below C.FMIN (stand, room) would otherwise be taken as the pitch
+        an = A.analyze_strike(x, fmin=C.FMIN)
         if an is None:
             continue
         both = np.isfinite(an.sigma) & np.isfinite(an.sigma_lpc) & np.isfinite(an.freq_lpc)
@@ -507,6 +508,9 @@ def main():
     if summ:
         M["E1_audio_real"] = summ
         md += ["\n## E1 Audio model on REAL recordings (ObjectFolder Real)\n",
+               f"Pitch is searched in the app's band ({C.FMIN:.0f} Hz to {C.FMAX / 1000:.0f} kHz). Searching from 60 Hz instead, "
+               "one glass #91 recording also shows a 79 Hz line (stand or room) only 6 dB below the glass's main mode, "
+               "and a lowest-line pitch picker takes it as the pitch.\n",
                "| # | object | material | strikes | pitch (Hz) | strikes agreeing on pitch | LPC vs FFT freq (cents) | LPC/STFT decay ratio | resynthesis spectral corr. |",
                "|---|---|---|---|---|---|---|---|---|"]
         for obj, r in sorted(summ.items()):

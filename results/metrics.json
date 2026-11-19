@@ -24,11 +24,11 @@
       "name": "Glass_Green",
       "material": "Glass",
       "strikes": 2,
-      "pitch_median_hz": 152.17632394097836,
-      "pitch_mode_share_%": 0.0,
+      "pitch_median_hz": 224.4865521511029,
+      "pitch_mode_share_%": 100.0,
       "lpc_vs_fft_freq_median_cents": 12.764671752615312,
       "lpc_vs_stft_decay_median_ratio": 9.204293012517764,
-      "resynth_spectral_corr_median": 0.49458098459220856
+      "resynth_spectral_corr_median": 0.480082118365705
     }
   },
   "E3_french_sim": {

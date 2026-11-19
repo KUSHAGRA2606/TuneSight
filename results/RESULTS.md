@@ -1,6 +1,6 @@
 # TuneSight results
 
-_generated 2026-11-19 10:00_
+_generated 2026-11-19 19:21_
 
 
 ## E1 Audio model (SIMULATED ground truth)
@@ -16,9 +16,11 @@ _generated 2026-11-19 10:00_
 
 ## E1 Audio model on REAL recordings (ObjectFolder Real)
 
+Pitch is searched in the app's band (150 Hz to 8 kHz). Searching from 60 Hz instead, one glass #91 recording also shows a 79 Hz line (stand or room) only 6 dB below the glass's main mode, and a lowest-line pitch picker takes it as the pitch.
+
 | # | object | material | strikes | pitch (Hz) | strikes agreeing on pitch | LPC vs FFT freq (cents) | LPC/STFT decay ratio | resynthesis spectral corr. |
 |---|---|---|---|---|---|---|---|---|
-| 91 | Glass_Green | Glass | 2 | 152.2 | 0% | 12.76 | 9.20 | 0.49 |
+| 91 | Glass_Green | Glass | 2 | 224.5 | 100% | 12.76 | 9.20 | 0.48 |
 
 ![](figures/e1_real_strike_91.png)
 

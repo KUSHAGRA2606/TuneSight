@@ -20,7 +20,7 @@ f = f₀ / √(1 + β uⁿ) (A. P. French, 1983), is **learned live from a few t
 | 1. Code repository | this folder | `python -m pytest -q`, then any command below |
 | 2. Interactive demo: explainer page with ManimGL animations, architecture diagram and five live in-browser demos | `web/index.html` | open in a browser (works offline; fonts need internet) |
 | 2b. Live demo: desktop app with webcam + microphone | `app/app.py` | `python app/app.py` (or `--sim` without hardware) |
-| 3. Slides: IITG Beamer template, 15 slides (title, 13 content, references) | `slides/TuneSight_slides.pdf` | `python scripts/build_slides.py` rebuilds it |
+| 3. Slides: IITG Beamer template, 22 slides in the course's suggested order (motivation, history, key highlights, what I learned, reflections, references) | `slides/TuneSight_slides.pdf` | `python scripts/build_slides.py` rebuilds it |
 | Results, all experiments | `results/RESULTS.md`, `results/metrics.json`, `results/figures/` | `python scripts/evaluate.py` |
 | Design, novelty, model | `docs/DESIGN.md` | |
 | Presenter's demo script | `docs/DEMO_SCRIPT.md` | |

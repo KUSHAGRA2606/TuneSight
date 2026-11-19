@@ -1,5 +1,34 @@
-% ------------------------------------------------------------------ slide 4
+% ------------------------------------------------------------------ key highlights at a glance
+\begin{frame}{Key highlights at a glance}
+    \label{sl:highlights}
+    \centering
+    \resizebox{\linewidth}{!}{%
+    \begin{tikzpicture}[x=3.45cm, y=2.32cm]
+        \node[tile=camc] at (0, 0) {{\Large\textbf{\textcolor{camc}{\EfiveFive\ cents}}}\\[3pt]
+            \scriptsize camera-only pitch error after 5 taps: \emph{audio teaches vision}\\[2pt]{\tiny slide \pageref{sl:learning}}};
+        \node[tile=phyc] at (1, 0) {{\Large\boldmath\textbf{\textcolor{phyc!75!black}{$n = \EthreeN$}}}\\[3pt]
+            \scriptsize French's exponent, found by the data (theory: 4)\\[2pt]{\tiny slide \pageref{sl:learning}}};
+        \node[tile=micc] at (2, 0) {{\Large\textbf{\textcolor{micc}{\EsixTunedHidden\,\%}}}\\[3pt]
+            \scriptsize which of 5 identical bowls rang; striker hidden, 10~dB SNR\\[2pt]{\tiny slide \pageref{sl:results1}}};
+        \node[tile=fusc] at (0, -1) {{\Large\textbf{\textcolor{fusc}{\EsixFusedZero{} vs \EsixAudioZero\,\%}}}\\[3pt]
+            \scriptsize fused vs audio alone at 0~dB: inverse effectiveness, measured\\[2pt]{\tiny slide \pageref{sl:results1}}};
+        \node[tile=camc] at (1, -1) {{\Large\textbf{\textcolor{camc}{\EsevenIdTap\ cents}}}\\[3pt]
+            \scriptsize tuning error for raga Bhupali after one check tap\\[2pt]{\tiny slide \pageref{sl:results2}}};
+        \node[tile=gray] at (2, -1) {{\Large\textbf{\textcolor{gray!60!black}{No dataset}}}\\[3pt]
+            \scriptsize one law plus Bayesian regression; every number is physical\\[2pt]{\tiny slide \pageref{sl:physics}}};
+    \end{tikzpicture}}
+    \vspace{2mm}
+    \begin{block}{What I built}
+        \scriptsize
+        A Python library (audio, vision, physics, fusion, tuning) $\cdot$ a live desktop app (webcam + mic, or simulated)
+        $\cdot$ an interactive web explainer with ManimGL animations $\cdot$ experiments E1--E7 and 16 automated tests
+        $\cdot$ code: \texttt{github.com/KUSHAGRA2606/TuneSight}
+    \end{block}
+\end{frame}
+
+% ------------------------------------------------------------------ system architecture
 \begin{frame}{System architecture: two modalities, one law}
+    \label{sl:arch}
     \centering
     \resizebox{\linewidth}{!}{%
     \begin{tikzpicture}[font=\scriptsize, >={Stealth[length=2mm]}, line width=0.6pt,
@@ -42,6 +71,7 @@
 
 % ------------------------------------------------------------------ slide 5
 \begin{frame}{Audio I: a struck bowl is a source--filter system}
+    \label{sl:audio1}
     \centering
     \resizebox{0.98\linewidth}{!}{%
     \begin{tikzpicture}[font=\scriptsize, >={Stealth[length=2mm]}]
@@ -80,6 +110,7 @@
 
 % ------------------------------------------------------------------ slide 6
 \begin{frame}{Audio II: measuring modes on a real recording}
+    \label{sl:audio2}
     \centering
     \includegraphics[width=0.80\linewidth]{images/figures/fig_strike.pdf}
     \begin{columns}[T]
@@ -106,6 +137,7 @@
 
 % ------------------------------------------------------------------ slide 7
 \begin{frame}{Vision: the water line from pixels}
+    \label{sl:vision}
     \centering
     \includegraphics[width=0.96\linewidth]{images/figures/fig_vision_steps.pdf}
     \vspace{-1mm}
@@ -130,6 +162,7 @@
 
 % ------------------------------------------------------------------ slide 8
 \begin{frame}{Physics: the law that joins the two modalities}
+    \label{sl:physics}
     \begin{columns}[c]
     \column{0.55\textwidth}
         \begin{law}[Water loading, A.\,P.\ French \cite{french1983}]
@@ -165,6 +198,7 @@
 
 % ------------------------------------------------------------------ slide 9
 \begin{frame}{Learning the law: audio teaches vision}
+    \label{sl:learning}
     \begin{columns}[T]
     \column{0.58\textwidth}
         \begin{theorem}[Bayesian regression \cite{bishop2006pattern}]
@@ -202,6 +236,7 @@
 
 % ------------------------------------------------------------------ slide 10
 \begin{frame}{Fusion: which identical bowl rang?}
+    \label{sl:fusion}
     \begin{theorem}[Optimal cue combination \cite{ernst2002humans}]
         \scriptsize
         Independent Gaussian cues $s_i \sim \mathcal N(s, \sigma_i^2)$: the maximum-likelihood estimate is
@@ -255,6 +290,7 @@
 
 % ------------------------------------------------------------------ slide 11
 \begin{frame}{Tuning by sight: from a raga to millilitres}
+    \label{sl:tuning}
     \begin{columns}[T]
     \column{0.52\textwidth}
         \begin{definition}[Raga targets]

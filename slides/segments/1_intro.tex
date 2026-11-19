@@ -1,62 +1,104 @@
-% ------------------------------------------------------------------ slide 2
-\begin{frame}{Motivation: a jal tarang that sees and listens}
-        \centering
-        \resizebox{0.78\linewidth}{!}{%
-        \begin{tikzpicture}[font=\scriptsize, >={Stealth[length=2mm]}]
-            \fill[gray!12] (-0.3,-0.25) rectangle (8.3,0);
-            \foreach \i/\f in {0/0.85, 1/0.72, 2/0.58, 3/0.42, 4/0.24} {
-                \pgfmathsetmacro{\x}{0.8+1.6*\i}
-                \fill[watc!75] ({\x-0.42},0.06) -- ({\x+0.42},0.06) -- ({\x+0.42+0.12*\f},{0.06+1.6*\f}) -- ({\x-0.42-0.12*\f},{0.06+1.6*\f}) -- cycle;
-                \draw[camc, line width=0.9pt] ({\x-0.45},0) -- ({\x+0.45},0) -- ({\x+0.57},1.75) -- ({\x-0.57},1.75) -- cycle;
-            }
-            \foreach \i/\n in {0/Sa, 1/Re, 2/Ga, 3/Pa, 4/Dha} { \node at ({0.8+1.6*\i},-0.5) {\n}; }
-            % striker touching bowl 3
-            \draw[brown!70!black, line width=2.2pt, line cap=round] (4.05,1.78) -- (5.3,3.0);
-            \node[anchor=west] at (5.35,3.0) {striker};
-            % camera
-            \draw[camc, fill=camc!15, rounded corners=1pt] (-2.35,0.55) rectangle (-1.15,1.25);
-            \draw[camc, fill=white] (-1.05,0.9) circle (0.16);
-            \node[camc] at (-1.75,1.5) {camera};
-            % microphone
-            \draw[micc, fill=micc!15, rounded corners=3pt] (8.85,1.05) rectangle (9.25,1.75);
-            \draw[micc] (9.05,1.05) -- (9.05,0.0);
-            \node[micc] at (9.05,2.0) {mic};
-            % laptop
-            \node[draw, rounded corners=2pt, fill=fusc!10, draw=fusc, align=center] (pc) at (3.9,-1.55) {laptop: \textbf{TuneSight}};
-            \draw[->, camc, thick] (-1.75,0.55) |- node[pos=0.75, below] {video: $h/H$, tip} (pc.west);
-            \draw[->, micc, thick] (9.05,-0.0) |- node[pos=0.75, below] {audio: pitch $f$} (pc.east);
-        \end{tikzpicture}}
-    \vspace{3mm}
+% ------------------------------------------------------------------ motivation: why this topic
+\begin{frame}{Motivation: why I picked this topic}
+    \label{sl:motivation}
+    \centering
+    \resizebox{0.56\linewidth}{!}{%
+    \begin{tikzpicture}[font=\scriptsize, >={Stealth[length=2mm]}]
+        \fill[gray!12] (-0.3,-0.25) rectangle (8.3,0);
+        \foreach \i/\f in {0/0.85, 1/0.72, 2/0.58, 3/0.42, 4/0.24} {
+            \pgfmathsetmacro{\x}{0.8+1.6*\i}
+            \fill[watc!75] ({\x-0.42},0.06) -- ({\x+0.42},0.06) -- ({\x+0.42+0.12*\f},{0.06+1.6*\f}) -- ({\x-0.42-0.12*\f},{0.06+1.6*\f}) -- cycle;
+            \draw[camc, line width=0.9pt] ({\x-0.45},0) -- ({\x+0.45},0) -- ({\x+0.57},1.75) -- ({\x-0.57},1.75) -- cycle;
+        }
+        \foreach \i/\n in {0/Sa, 1/Re, 2/Ga, 3/Pa, 4/Dha} { \node at ({0.8+1.6*\i},-0.5) {\n}; }
+        % striker touching bowl 3
+        \draw[brown!70!black, line width=2.2pt, line cap=round] (4.05,1.78) -- (5.3,3.0);
+        \node[anchor=west] at (5.35,3.0) {striker};
+        % camera
+        \draw[camc, fill=camc!15, rounded corners=1pt] (-2.35,0.55) rectangle (-1.15,1.25);
+        \draw[camc, fill=white] (-1.05,0.9) circle (0.16);
+        \node[camc] at (-1.75,1.5) {camera};
+        % microphone
+        \draw[micc, fill=micc!15, rounded corners=3pt] (8.85,1.05) rectangle (9.25,1.75);
+        \draw[micc] (9.05,1.05) -- (9.05,0.0);
+        \node[micc] at (9.05,2.0) {mic};
+        % laptop
+        \node[draw, rounded corners=2pt, fill=fusc!10, draw=fusc, align=center] (pc) at (3.9,-1.55) {laptop: \textbf{TuneSight}};
+        \draw[->, camc, thick] (-1.75,0.55) |- node[pos=0.75, below] {video: $h/H$, tip} (pc.west);
+        \draw[->, micc, thick] (9.05,-0.0) |- node[pos=0.75, below] {audio: pitch $f$} (pc.east);
+    \end{tikzpicture}}
+    \vspace{2mm}
     \begin{columns}[T]
-    \column{0.47\textwidth}
+    \column{0.51\textwidth}
         \scriptsize
         \begin{itemize}
-            \item The \textbf{jal tarang} is a row of bowls tuned with water: more water, lower pitch \cite{french1983}.
-            \item \textbf{Q1.} Which of several \emph{identical} bowls was struck?
-            \item \textbf{Q2.} How much water makes a bowl play a chosen swara?
+            \item \textbf{Both senses are truly needed:} the camera cannot hear; the microphone cannot tell identical bowls apart.
+            \item \textbf{An Indian instrument, clean physics:} in a jal tarang, more water means a lower pitch \cite{french1983}.
+            \item \textbf{It joins both halves of the course:} source--filter audio and classical image processing.
+            \item \textbf{Explainable, easy to demo live:} glasses, water, a webcam, a mic.
         \end{itemize}
-    \column{0.51\textwidth}
-        \begin{block}{Idea}
+    \column{0.47\textwidth}
+        \begin{block}{Two questions, one law}
             \scriptsize
-            The camera sees the water (fill ratio $r = h/H$) but cannot hear; the microphone hears the pitch $f$ but cannot tell
-            identical bowls apart. One physical law $f(r)$, \emph{learned online from a few taps}, joins them, so each modality
-            predicts what the other should observe.
+            \textbf{Q1.} Which of several \emph{identical} bowls was struck?\\
+            \textbf{Q2.} How much water makes a bowl play a chosen swara?\\[3pt]
+            One law $f(r)$ between the camera's fill ratio $r = h/H$ and the heard pitch $f$,
+            \emph{learned from a few taps}, answers both.
         \end{block}
     \end{columns}
 \end{frame}
 
-% ------------------------------------------------------------------ slide 3
-\begin{frame}{Related work and what is new}
+% ------------------------------------------------------------------ past and current work
+\begin{frame}{Past and current work: a short history}
+    \label{sl:history}
+    \centering
+    \resizebox{\linewidth}{!}{%
+    \begin{tikzpicture}[>={Stealth[length=2.5mm]}]
+        \node[era=micc] (e1) at (0, 0) {\textcolor{micc}{\textbf{Physics and signal models}}\\[4pt]
+            $\bullet$ Speech as source + filter: linear prediction \cite{makhoul1975linear}\\[3pt]
+            $\bullet$ Burg's estimator \cite{burg1975maximum}; damped sinusoids \cite{kumaresan1982estimating}\\[3pt]
+            $\bullet$ Otsu's threshold \cite{otsu1979threshold}\\[3pt]
+            $\bullet$ Water lowers a wineglass's pitch \cite{french1983}};
+        \node[era=fusc] (e2) at (3.5, 0) {\textcolor{fusc}{\textbf{Fusing senses, measuring scenes}}\\[4pt]
+            $\bullet$ A weak sense gains most from a second one \cite{stein1993merging}\\[3pt]
+            $\bullet$ Weight each sense by its reliability \cite{ernst2002humans}\\[3pt]
+            $\bullet$ Markers give a camera its scale \cite{garrido2014aruco}};
+        \node[era=violet] (e3) at (7.0, 0) {\textcolor{violet}{\textbf{Learned audio-visual models}}\\[4pt]
+            $\bullet$ Sounds from video \cite{owens2016visually}\\[3pt]
+            $\bullet$ Shape, material from sound \cite{zhang2017shape}\\[3pt]
+            $\bullet$ Which pixels sound \cite{zhao2018sound}\\[3pt]
+            $\bullet$ Level from pouring sound \cite{liang2019pouringnet}\\[3pt]
+            $\bullet$ Multisensory objects \cite{gao2023objectfolder}};
+        \node[era=phyc] (e4) at (10.5, 0) {\textcolor{phyc!75!black}{\textbf{TuneSight (this work)}}\\[4pt]
+            $\bullet$ A physical law links the two senses\\[3pt]
+            $\bullet$ Learns from about 5 taps; no dataset\\[3pt]
+            $\bullet$ Works for objects that look \emph{identical}};
+        \foreach \x in {0, 3.5, 7.0} \draw[->, thick, gray] (\x + 1.6, -1.2) -- (\x + 1.9, -1.2);
+        \draw[->, very thick, gray!70] (-1.65,-5.75) -- (12.3,-5.75) node[right, font=\scriptsize, text=gray] {time};
+        \foreach \x/\t in {0/1975--1983, 3.5/1993--2014, 7.0/2016--2023, 10.5/2026}
+            \node[font=\scriptsize\bfseries, text=gray!80!black, fill=white, inner sep=1.5pt] at (\x,-5.75) {\t};
+    \end{tikzpicture}}
+    \vspace{1mm}
+    \begin{block}{The trend, and where this work fits}
+        \scriptsize
+        Learned models link sound to \emph{appearance} and need large datasets. Identical bowls defeat appearance, and a musician
+        will not record a dataset, so TuneSight returns to physics and reuses the perception results for the fusion.
+    \end{block}
+\end{frame}
+
+% ------------------------------------------------------------------ what is new
+\begin{frame}{Where this work fits: what is new}
+    \label{sl:new}
     \scriptsize
     \begin{tabular}{>{\raggedright\arraybackslash}p{0.46\linewidth} >{\raggedright\arraybackslash}p{0.46\linewidth}}
         \toprule
         \textbf{Already published} & \textbf{This project} \\
         \midrule
-        Material recognition from image + impact sound \cite{gao2023objectfolder} &
+        Material recognition from image + impact sound \cite{gao2023objectfolder,zhang2017shape} &
             not claimed; only the modal (pole) model of sound is reused \\[2pt]
         Liquid level from the sound of \emph{pouring} \cite{liang2019pouringnet} &
             the \emph{struck} resonance + a physical law, taught by the camera \\[2pt]
-        Sound-source localisation by appearance \cite{owens2016visually} &
+        Sound-source localisation by appearance \cite{owens2016visually,zhao2018sound} &
             identical bowls defeat appearance; physics + striker motion \\[2pt]
         Jal tarang apps (virtual instruments) &
             tunes and transcribes a \emph{real} instrument \\
