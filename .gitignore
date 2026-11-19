@@ -1,0 +1,35 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.venv-manim/
+.pytest_cache/
+
+# data and fitted models (large or personal; see data/README.md)
+data/objectfolder/
+data/own/
+models/
+
+# LaTeX build files (the finished deck slides/TuneSight_slides.pdf is kept)
+slides/*.aux
+slides/*.log
+slides/*.nav
+slides/*.out
+slides/*.snm
+slides/*.toc
+slides/*.bbl
+slides/*.blg
+slides/*.vrb
+slides/main.pdf
+
+# ManimGL intermediates (finished videos live in web/media/)
+animations/videos/
+animations/.ffmpeg/
+
+# logs
+results/eval_log.txt
+
+# course material and the original template archive: not ours to redistribute
+Sound Midsem.pdf
+iitG_DA321_*.pdf
+IITG_presentation.zip

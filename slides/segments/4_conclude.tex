@@ -1,0 +1,31 @@
+% ------------------------------------------------------------------ slide 14
+\begin{frame}{Live demo and conclusion}
+    \begin{columns}[T]
+    \column{0.54\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{images/figures/app_screenshot.png}\par
+        {\tiny Desktop app (webcam + mic, or \texttt{--sim}): water lines, targets, spectrum, LPC poles, learned law.\par}
+        \vspace{2mm}
+        \begin{minipage}[c]{0.52\linewidth}
+            \includegraphics[width=\linewidth]{images/figures/anim_which.jpg}
+        \end{minipage}\hfill
+        \begin{minipage}[c]{0.45\linewidth}
+            \raggedright\tiny
+            Explainer page \texttt{web/index.html}: five ManimGL animations, the architecture diagram and five live in-browser demos.
+        \end{minipage}
+    \column{0.44\textwidth}
+        \begin{exampleblock}{Conclusion}
+            \scriptsize
+            \begin{itemize}
+                \item One physical law lets each modality predict the other.
+                \item Fusion solves what neither sense can alone: identical bowls, noise, pitch ties.
+                \item A few taps calibrate it; it then tunes a jal tarang by sight and writes the sargam.
+            \end{itemize}
+        \end{exampleblock}
+        \begin{alertblock}{Limitations and next steps}
+            \scriptsize
+            Most results are simulated with known ground truth; real audio is checked on ObjectFolder recordings \cite{gao2023objectfolder}.
+            Next: a recorded session with real bowls, opaque bowls (top view), two strikers.
+        \end{alertblock}
+    \end{columns}
+\end{frame}

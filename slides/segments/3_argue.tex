@@ -1,0 +1,37 @@
+% ------------------------------------------------------------------ slide 12
+\begin{frame}{Results I: which of five identical bowls rang?}
+    \centering
+    \includegraphics[width=0.96\linewidth]{images/figures/fig_whichbowl.pdf}
+    \scriptsize
+    \begin{itemize}
+        \item Appearance cannot separate identical bowls: chance is 20\,\%.
+        \item Bowls tuned to a raga, striker hidden: audio through physics alone gives \textbf{\EsixHiddenTwenty\,\%} at 20~dB and \textbf{\EsixTunedHidden\,\%} at 10~dB SNR.
+        \item At 0~dB, or when two bowls hold the same water, the striker's motion decides:
+              fused \textbf{\EsixFusedZero\,\%} against \EsixAudioZero\,\% for audio alone (inverse effectiveness).
+    \end{itemize}
+\end{frame}
+
+% ------------------------------------------------------------------ slide 13
+\begin{frame}{Results II: calibration, tuning and robustness}
+    \begin{columns}[T]
+    \column{0.49\textwidth}
+        \centering
+        \includegraphics[height=3.6cm]{images/figures/fig_tuning.pdf}
+    \column{0.49\textwidth}
+        \centering
+        \includegraphics[height=3.6cm]{images/figures/fig_robust.pdf}
+    \end{columns}
+    \vspace{1mm}
+    \scriptsize
+    \centering
+    \begin{tabular}{@{}p{0.36\linewidth} p{0.60\linewidth}@{}}
+        \toprule
+        \textbf{Experiment} & \textbf{Result} \\
+        \midrule
+        Camera-only pitch error &\EfiveOne\ c (1 tap) $\to$ \textbf{\EfiveFive\ c} (5 taps) $\to$ \EfiveTen\ c (10 taps) \\
+        Law recovered from data & evidence $\hat n = \EthreeN$; least squares $\hat n = \EthreeNnl$; theory $n = 4$ \\
+        Tune Bhupali (one check tap) & identical bowls \EsevenIdVision\,$\to$\,\textbf{\EsevenIdTap\ c}; 3\,\% spread \EsevenDiffVision\,$\to$\,\textbf{\EsevenDiffTap\ c} \\
+        Water level, fill-ratio error & \EfourClean\ clean, \EfourBlur\ blurred (4 px), \EfourClear\ clear water \\
+        \bottomrule
+    \end{tabular}
+\end{frame}

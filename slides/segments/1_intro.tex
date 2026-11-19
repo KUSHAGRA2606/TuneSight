@@ -1,0 +1,74 @@
+% ------------------------------------------------------------------ slide 2
+\begin{frame}{Motivation: a jal tarang that sees and listens}
+        \centering
+        \resizebox{0.78\linewidth}{!}{%
+        \begin{tikzpicture}[font=\scriptsize, >={Stealth[length=2mm]}]
+            \fill[gray!12] (-0.3,-0.25) rectangle (8.3,0);
+            \foreach \i/\f in {0/0.85, 1/0.72, 2/0.58, 3/0.42, 4/0.24} {
+                \pgfmathsetmacro{\x}{0.8+1.6*\i}
+                \fill[watc!75] ({\x-0.42},0.06) -- ({\x+0.42},0.06) -- ({\x+0.42+0.12*\f},{0.06+1.6*\f}) -- ({\x-0.42-0.12*\f},{0.06+1.6*\f}) -- cycle;
+                \draw[camc, line width=0.9pt] ({\x-0.45},0) -- ({\x+0.45},0) -- ({\x+0.57},1.75) -- ({\x-0.57},1.75) -- cycle;
+            }
+            \foreach \i/\n in {0/Sa, 1/Re, 2/Ga, 3/Pa, 4/Dha} { \node at ({0.8+1.6*\i},-0.5) {\n}; }
+            % striker touching bowl 3
+            \draw[brown!70!black, line width=2.2pt, line cap=round] (4.05,1.78) -- (5.3,3.0);
+            \node[anchor=west] at (5.35,3.0) {striker};
+            % camera
+            \draw[camc, fill=camc!15, rounded corners=1pt] (-2.35,0.55) rectangle (-1.15,1.25);
+            \draw[camc, fill=white] (-1.05,0.9) circle (0.16);
+            \node[camc] at (-1.75,1.5) {camera};
+            % microphone
+            \draw[micc, fill=micc!15, rounded corners=3pt] (8.85,1.05) rectangle (9.25,1.75);
+            \draw[micc] (9.05,1.05) -- (9.05,0.0);
+            \node[micc] at (9.05,2.0) {mic};
+            % laptop
+            \node[draw, rounded corners=2pt, fill=fusc!10, draw=fusc, align=center] (pc) at (3.9,-1.55) {laptop: \textbf{TuneSight}};
+            \draw[->, camc, thick] (-1.75,0.55) |- node[pos=0.75, below] {video: $h/H$, tip} (pc.west);
+            \draw[->, micc, thick] (9.05,-0.0) |- node[pos=0.75, below] {audio: pitch $f$} (pc.east);
+        \end{tikzpicture}}
+    \vspace{3mm}
+    \begin{columns}[T]
+    \column{0.47\textwidth}
+        \scriptsize
+        \begin{itemize}
+            \item The \textbf{jal tarang} is a row of bowls tuned with water: more water, lower pitch \cite{french1983}.
+            \item \textbf{Q1.} Which of several \emph{identical} bowls was struck?
+            \item \textbf{Q2.} How much water makes a bowl play a chosen swara?
+        \end{itemize}
+    \column{0.51\textwidth}
+        \begin{block}{Idea}
+            \scriptsize
+            The camera sees the water (fill ratio $r = h/H$) but cannot hear; the microphone hears the pitch $f$ but cannot tell
+            identical bowls apart. One physical law $f(r)$, \emph{learned online from a few taps}, joins them, so each modality
+            predicts what the other should observe.
+        \end{block}
+    \end{columns}
+\end{frame}
+
+% ------------------------------------------------------------------ slide 3
+\begin{frame}{Related work and what is new}
+    \scriptsize
+    \begin{tabular}{>{\raggedright\arraybackslash}p{0.46\linewidth} >{\raggedright\arraybackslash}p{0.46\linewidth}}
+        \toprule
+        \textbf{Already published} & \textbf{This project} \\
+        \midrule
+        Material recognition from image + impact sound \cite{gao2023objectfolder} &
+            not claimed; only the modal (pole) model of sound is reused \\[2pt]
+        Liquid level from the sound of \emph{pouring} \cite{liang2019pouringnet} &
+            the \emph{struck} resonance + a physical law, taught by the camera \\[2pt]
+        Sound-source localisation by appearance \cite{owens2016visually} &
+            identical bowls defeat appearance; physics + striker motion \\[2pt]
+        Jal tarang apps (virtual instruments) &
+            tunes and transcribes a \emph{real} instrument \\
+        \bottomrule
+    \end{tabular}
+    \vspace{2mm}
+    \begin{exampleblock}{Contributions}
+        \scriptsize
+        \begin{enumerate}
+            \item \textbf{Audio-visual correspondence for visually identical sources}, through a physical law instead of appearance.
+            \item \textbf{Audio teaches vision}: online Bayesian calibration; model evidence recovers French's exponent $n\approx 4$ from data.
+            \item \textbf{Vision-guided tuning} of a raga with one verification tap per bowl, and live sargam transcription.
+        \end{enumerate}
+    \end{exampleblock}
+\end{frame}

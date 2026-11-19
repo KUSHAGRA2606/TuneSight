@@ -1,0 +1,23 @@
+{
+ "EoneFreq": "0.00",
+ "EoneSTFT": "0.3",
+ "EoneLPC": "1.4",
+ "EthreeN": "4.25",
+ "EthreeRzero": "0.02",
+ "EfiveOne": "32",
+ "EfiveFive": "2.8",
+ "EfiveTen": "1.4",
+ "EsixTunedHidden": "96",
+ "EsixHiddenTwenty": "100",
+ "EthreeNnl": "4.42",
+ "EsixRandomHidden": "85",
+ "EsixFusedZero": "100",
+ "EsixAudioZero": "22",
+ "EsevenIdVision": "12.7",
+ "EsevenIdTap": "8.4",
+ "EsevenDiffVision": "68.2",
+ "EsevenDiffTap": "12.9",
+ "EfourClean": "0.007",
+ "EfourBlur": "0.009",
+ "EfourClear": "0.009"
+}

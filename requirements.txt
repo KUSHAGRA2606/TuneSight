@@ -1,0 +1,10 @@
+# TuneSight: tested with Python 3.12 and the versions in the comments.
+numpy                        # 2.5.5
+scipy                        # 1.18.1
+soundfile                    # 0.14.0
+sounddevice                  # 0.5.6
+opencv-contrib-python>=4.7   # 5.1.0.95; cv2.aruco.ArucoDetector needs 4.7 or newer
+PySide6-Essentials           # 6.12.0
+pyqtgraph                    # 0.14.0
+matplotlib                   # 3.11.2
+pytest                       # 9.2.0; runs the test suite (python -m pytest -q)

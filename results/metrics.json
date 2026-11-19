@@ -1,0 +1,550 @@
+{
+  "E1_audio_sim": {
+    "40": {
+      "mode_detection_%": 80.3921568627451,
+      "freq_err_median_cents": 0.004126951082707035,
+      "decay_err_stft_median_%": 0.2744972269818402,
+      "decay_err_lpc_median_%": 1.3898319652792646
+    },
+    "20": {
+      "mode_detection_%": 56.57894736842105,
+      "freq_err_median_cents": 0.029393567266964918,
+      "decay_err_stft_median_%": 1.2781139653890161,
+      "decay_err_lpc_median_%": 54.15546809027556
+    },
+    "10": {
+      "mode_detection_%": 43.333333333333336,
+      "freq_err_median_cents": 0.0378670411176261,
+      "decay_err_stft_median_%": 2.2001529194206615,
+      "decay_err_lpc_median_%": 308.81066884764397
+    }
+  },
+  "E1_audio_real": {
+    "91": {
+      "name": "Glass_Green",
+      "material": "Glass",
+      "strikes": 2,
+      "pitch_median_hz": 152.17632394097836,
+      "pitch_mode_share_%": 0.0,
+      "lpc_vs_fft_freq_median_cents": 12.764671752615312,
+      "lpc_vs_stft_decay_median_ratio": 9.204293012517764,
+      "resynth_spectral_corr_median": 0.49458098459220856
+    }
+  },
+  "E3_french_sim": {
+    "f0": 1100.2732839129442,
+    "beta": 3.5546881967211275,
+    "n": 4.4205235152183855,
+    "r0": 1.5109392221288415e-19,
+    "rmse_cents": 2.8216411995054655,
+    "n_std": 0.1472653263110644,
+    "bayes_n": 4.25,
+    "bayes_r0": 0.02,
+    "bayes_f0": 1100.7216825356466,
+    "bayes_beta": 3.5001858296535007
+  },
+  "E4_vision_sim": {
+    "clean": {
+      "level_found_%": 100.0,
+      "fill_mae": 0.006770552460525626
+    },
+    "blur 2px": {
+      "level_found_%": 100.0,
+      "fill_mae": 0.003405079538429482
+    },
+    "blur 4px": {
+      "level_found_%": 91.66666666666667,
+      "fill_mae": 0.009210962619366889
+    },
+    "blur 6px": {
+      "level_found_%": 41.666666666666664,
+      "fill_mae": 0.01457158304317981
+    },
+    "dark x0.6": {
+      "level_found_%": 100.0,
+      "fill_mae": 0.004663439948621319
+    },
+    "dark x0.35": {
+      "level_found_%": 100.0,
+      "fill_mae": 0.004438509384246517
+    },
+    "noise 10": {
+      "level_found_%": 100.0,
+      "fill_mae": 0.004271494292677797
+    },
+    "clear water": {
+      "level_found_%": 100.0,
+      "fill_mae": 0.00884030074715355
+    }
+  },
+  "E5_learning_curve": {
+    "SIMULATED": {
+      "1": 32.2237091262604,
+      "2": 21.15715957326494,
+      "3": 13.65006555104879,
+      "4": 12.619795960800925,
+      "5": 2.823252096786109,
+      "6": 2.6216686050169127,
+      "7": 2.302505212786417,
+      "8": 1.45183857302082,
+      "9": 1.7887148181037862,
+      "10": 1.3926826692274674,
+      "11": 1.2680879139388344,
+      "12": 1.340891926886235
+    }
+  },
+  "E6_which_bowl_sim": {
+    "tuned to raga | striker visible | SNR 40 dB": {
+      "chance": 20.0,
+      "motion only": 100.0,
+      "audio only (physics)": 100.0,
+      "fused": 100.0
+    },
+    "tuned to raga | striker visible | SNR 20 dB": {
+      "chance": 20.0,
+      "motion only": 100.0,
+      "audio only (physics)": 100.0,
+      "fused": 100.0
+    },
+    "tuned to raga | striker visible | SNR 10 dB": {
+      "chance": 20.0,
+      "motion only": 100.0,
+      "audio only (physics)": 96.0,
+      "fused": 100.0
+    },
+    "tuned to raga | striker visible | SNR 5 dB": {
+      "chance": 20.0,
+      "motion only": 100.0,
+      "audio only (physics)": 70.0,
+      "fused": 100.0
+    },
+    "tuned to raga | striker visible | SNR 0 dB": {
+      "chance": 20.0,
+      "motion only": 100.0,
+      "audio only (physics)": 22.000000000000004,
+      "fused": 100.0
+    },
+    "tuned to raga | striker hidden | SNR 40 dB": {
+      "chance": 20.0,
+      "motion only": 20.0,
+      "audio only (physics)": 100.0,
+      "fused": 100.0
+    },
+    "tuned to raga | striker hidden | SNR 20 dB": {
+      "chance": 20.0,
+      "motion only": 20.0,
+      "audio only (physics)": 100.0,
+      "fused": 100.0
+    },
+    "tuned to raga | striker hidden | SNR 10 dB": {
+      "chance": 20.0,
+      "motion only": 20.0,
+      "audio only (physics)": 96.0,
+      "fused": 96.0
+    },
+    "tuned to raga | striker hidden | SNR 5 dB": {
+      "chance": 20.0,
+      "motion only": 20.0,
+      "audio only (physics)": 54.0,
+      "fused": 54.0
+    },
+    "tuned to raga | striker hidden | SNR 0 dB": {
+      "chance": 20.0,
+      "motion only": 20.0,
+      "audio only (physics)": 25.999999999999996,
+      "fused": 25.999999999999996
+    },
+    "random levels | striker visible | SNR 40 dB": {
+      "chance": 20.0,
+      "motion only": 100.0,
+      "audio only (physics)": 72.5,
+      "fused": 100.0
+    },
+    "random levels | striker visible | SNR 20 dB": {
+      "chance": 20.0,
+      "motion only": 100.0,
+      "audio only (physics)": 85.0,
+      "fused": 100.0
+    },
+    "random levels | striker visible | SNR 10 dB": {
+      "chance": 20.0,
+      "motion only": 100.0,
+      "audio only (physics)": 92.5,
+      "fused": 100.0
+    },
+    "random levels | striker visible | SNR 5 dB": {
+      "chance": 20.0,
+      "motion only": 100.0,
+      "audio only (physics)": 65.0,
+      "fused": 100.0
+    },
+    "random levels | striker visible | SNR 0 dB": {
+      "chance": 20.0,
+      "motion only": 100.0,
+      "audio only (physics)": 44.00000000000001,
+      "fused": 100.0
+    },
+    "random levels | striker hidden | SNR 40 dB": {
+      "chance": 20.0,
+      "motion only": 20.0,
+      "audio only (physics)": 85.0,
+      "fused": 85.0
+    },
+    "random levels | striker hidden | SNR 20 dB": {
+      "chance": 20.0,
+      "motion only": 20.0,
+      "audio only (physics)": 85.0,
+      "fused": 85.0
+    },
+    "random levels | striker hidden | SNR 10 dB": {
+      "chance": 20.0,
+      "motion only": 20.0,
+      "audio only (physics)": 76.0,
+      "fused": 76.0
+    },
+    "random levels | striker hidden | SNR 5 dB": {
+      "chance": 20.0,
+      "motion only": 20.0,
+      "audio only (physics)": 64.5,
+      "fused": 64.5
+    },
+    "random levels | striker hidden | SNR 0 dB": {
+      "chance": 20.0,
+      "motion only": 20.0,
+      "audio only (physics)": 32.0,
+      "fused": 32.0
+    }
+  },
+  "E7_tuning_sim": {
+    "near-identical bowls (0.4% spread)": {
+      "runs": [
+        {
+          "raga": "Bhupali",
+          "sa_hz": 630.5744287834457,
+          "notes": [
+            {
+              "note": "Sa",
+              "target_hz": 630.5744287834457,
+              "vision_only_cents": 7.416207452312045,
+              "with_one_tap_cents": -16.329807124403285,
+              "heard_hz": 624.6545201868428
+            },
+            {
+              "note": "Re",
+              "target_hz": 709.3962323813764,
+              "vision_only_cents": -2.4305420269984186,
+              "with_one_tap_cents": -2.5814065006431433,
+              "heard_hz": 708.3392548667294
+            },
+            {
+              "note": "Ga",
+              "target_hz": 788.2180359793072,
+              "vision_only_cents": 12.527234872906254,
+              "with_one_tap_cents": -7.61626001178043,
+              "heard_hz": 784.7580256583103
+            },
+            {
+              "note": "Pa",
+              "target_hz": 945.8616431751685,
+              "vision_only_cents": 8.130949621590087,
+              "with_one_tap_cents": -6.6248348116455675,
+              "heard_hz": 942.2490737629396
+            },
+            {
+              "note": "Dha",
+              "target_hz": 1050.957381305743,
+              "vision_only_cents": 23.22119827994112,
+              "with_one_tap_cents": 4.039108855530708,
+              "heard_hz": 1053.4122123003974
+            }
+          ]
+        },
+        {
+          "raga": "Bhupali",
+          "sa_hz": 640.8559020717548,
+          "notes": [
+            {
+              "note": "Sa",
+              "target_hz": 640.8559020717548,
+              "vision_only_cents": 6.2337973756901555,
+              "with_one_tap_cents": -19.290092086648595,
+              "heard_hz": 633.7548677666383
+            },
+            {
+              "note": "Re",
+              "target_hz": 720.9628898307242,
+              "vision_only_cents": -15.826324572787351,
+              "with_one_tap_cents": -7.890352444489372,
+              "heard_hz": 717.6844725971948
+            },
+            {
+              "note": "Ga",
+              "target_hz": 801.0698775896935,
+              "vision_only_cents": -4.731921510605859,
+              "with_one_tap_cents": -9.387522102965024,
+              "heard_hz": 796.7378755548392
+            },
+            {
+              "note": "Pa",
+              "target_hz": 961.2838531076322,
+              "vision_only_cents": -5.407064978267484,
+              "with_one_tap_cents": -7.3470724388952195,
+              "heard_hz": 957.2129668047634
+            },
+            {
+              "note": "Dha",
+              "target_hz": 1068.0931701195914,
+              "vision_only_cents": -7.849638248395092,
+              "with_one_tap_cents": 1.084191221356079,
+              "heard_hz": 1068.7622765994952
+            }
+          ]
+        },
+        {
+          "raga": "Bhupali",
+          "sa_hz": 643.8241379487858,
+          "notes": [
+            {
+              "note": "Sa",
+              "target_hz": 643.8241379487858,
+              "vision_only_cents": 11.193704025071053,
+              "with_one_tap_cents": -9.940597811385139,
+              "heard_hz": 640.137947846387
+            },
+            {
+              "note": "Re",
+              "target_hz": 724.3021551923841,
+              "vision_only_cents": -37.83994801832972,
+              "with_one_tap_cents": -16.388275733048687,
+              "heard_hz": 717.4780877767436
+            },
+            {
+              "note": "Ga",
+              "target_hz": 804.7801724359823,
+              "vision_only_cents": -24.502814313618998,
+              "with_one_tap_cents": -6.4057567301919764,
+              "heard_hz": 801.8078993866502
+            },
+            {
+              "note": "Pa",
+              "target_hz": 965.7362069231788,
+              "vision_only_cents": -20.064569746428592,
+              "with_one_tap_cents": -8.082335423637584,
+              "heard_hz": 961.2381366828264
+            },
+            {
+              "note": "Dha",
+              "target_hz": 1073.040229914643,
+              "vision_only_cents": 2.6892367090249296,
+              "with_one_tap_cents": 2.7341259083192937,
+              "heard_hz": 1074.7362137715302
+            }
+          ]
+        }
+      ],
+      "vision_only_mean_abs": 12.671010116797811,
+      "vision_only_max_abs": 37.83994801832972,
+      "one_tap_mean_abs": 8.382782613662675,
+      "one_tap_max_abs": 19.290092086648595,
+      "vision_only_all": [
+        7.416207452312045,
+        -2.4305420269984186,
+        12.527234872906254,
+        8.130949621590087,
+        23.22119827994112,
+        6.2337973756901555,
+        -15.826324572787351,
+        -4.731921510605859,
+        -5.407064978267484,
+        -7.849638248395092,
+        11.193704025071053,
+        -37.83994801832972,
+        -24.502814313618998,
+        -20.064569746428592,
+        2.6892367090249296
+      ],
+      "one_tap_all": [
+        -16.329807124403285,
+        -2.5814065006431433,
+        -7.61626001178043,
+        -6.6248348116455675,
+        4.039108855530708,
+        -19.290092086648595,
+        -7.890352444489372,
+        -9.387522102965024,
+        -7.3470724388952195,
+        1.084191221356079,
+        -9.940597811385139,
+        -16.388275733048687,
+        -6.4057567301919764,
+        -8.082335423637584,
+        2.7341259083192937
+      ]
+    },
+    "bowls differ (3% spread)": {
+      "runs": [
+        {
+          "raga": "Bhupali",
+          "sa_hz": 614.0402954449878,
+          "notes": [
+            {
+              "note": "Sa",
+              "target_hz": 614.0402954449878,
+              "vision_only_cents": 7.341301203208608,
+              "with_one_tap_cents": -16.230398551845347,
+              "heard_hz": 608.3105398608703
+            },
+            {
+              "note": "Re",
+              "target_hz": 690.7953323756112,
+              "vision_only_cents": 24.861340065379157,
+              "with_one_tap_cents": 0.8408658144329283,
+              "heard_hz": 691.1309353330408
+            },
+            {
+              "note": "Ga",
+              "target_hz": 767.5503693062348,
+              "vision_only_cents": 81.12699308961737,
+              "with_one_tap_cents": -1.923394920047059,
+              "heard_hz": 766.6980970775351
+            },
+            {
+              "note": "Pa",
+              "target_hz": 921.0604431674817,
+              "vision_only_cents": 79.57111541952331,
+              "with_one_tap_cents": -5.251313975242284,
+              "heard_hz": 918.270843837461
+            },
+            {
+              "note": "Dha",
+              "target_hz": 1023.4004924083131,
+              "vision_only_cents": 145.21124540644016,
+              "with_one_tap_cents": 1.9311668064065826,
+              "heard_hz": 1024.542717961614
+            }
+          ]
+        },
+        {
+          "raga": "Bhupali",
+          "sa_hz": 668.0703355427561,
+          "notes": [
+            {
+              "note": "Sa",
+              "target_hz": 668.0703355427561,
+              "vision_only_cents": 6.307744872643482,
+              "with_one_tap_cents": -19.316354213778475,
+              "heard_hz": 660.657728423966
+            },
+            {
+              "note": "Re",
+              "target_hz": 751.5791274856006,
+              "vision_only_cents": -135.0420278953085,
+              "with_one_tap_cents": -33.02641329577296,
+              "heard_hz": 737.3772929981523
+            },
+            {
+              "note": "Ga",
+              "target_hz": 835.087919428445,
+              "vision_only_cents": -114.05715953699718,
+              "with_one_tap_cents": -24.009466346869484,
+              "heard_hz": 823.5865139037398
+            },
+            {
+              "note": "Pa",
+              "target_hz": 1002.1055033141341,
+              "vision_only_cents": -33.62773315317725,
+              "with_one_tap_cents": -8.5183697838812,
+              "heard_hz": 997.1868508568899
+            },
+            {
+              "note": "Dha",
+              "target_hz": 1113.4505592379269,
+              "vision_only_cents": -57.837074034121756,
+              "with_one_tap_cents": -0.004262918230807883,
+              "heard_hz": 1113.4478175272686
+            }
+          ]
+        },
+        {
+          "raga": "Bhupali",
+          "sa_hz": 661.9244981600699,
+          "notes": [
+            {
+              "note": "Sa",
+              "target_hz": 661.9244981600699,
+              "vision_only_cents": 9.789319474241722,
+              "with_one_tap_cents": -13.233311695714384,
+              "heard_hz": 656.8841280691155
+            },
+            {
+              "note": "Re",
+              "target_hz": 744.6650604300786,
+              "vision_only_cents": -126.53233838155163,
+              "with_one_tap_cents": -22.764131545433514,
+              "heard_hz": 734.9374958761705
+            },
+            {
+              "note": "Ga",
+              "target_hz": 827.4056227000874,
+              "vision_only_cents": -56.83384860984565,
+              "with_one_tap_cents": -18.503477462508613,
+              "heard_hz": 818.6093794711337
+            },
+            {
+              "note": "Pa",
+              "target_hz": 992.8867472401048,
+              "vision_only_cents": -134.4454480434563,
+              "with_one_tap_cents": -27.240134635321155,
+              "heard_hz": 977.3864169906059
+            },
+            {
+              "note": "Dha",
+              "target_hz": 1103.2074969334499,
+              "vision_only_cents": -10.518504224554071,
+              "with_one_tap_cents": 1.3048536666629844,
+              "heard_hz": 1104.0393122380829
+            }
+          ]
+        }
+      ],
+      "vision_only_mean_abs": 68.20687956067107,
+      "vision_only_max_abs": 145.21124540644016,
+      "one_tap_mean_abs": 12.939861042143185,
+      "one_tap_max_abs": 33.02641329577296,
+      "vision_only_all": [
+        7.341301203208608,
+        24.861340065379157,
+        81.12699308961737,
+        79.57111541952331,
+        145.21124540644016,
+        6.307744872643482,
+        -135.0420278953085,
+        -114.05715953699718,
+        -33.62773315317725,
+        -57.837074034121756,
+        9.789319474241722,
+        -126.53233838155163,
+        -56.83384860984565,
+        -134.4454480434563,
+        -10.518504224554071
+      ],
+      "one_tap_all": [
+        -16.230398551845347,
+        0.8408658144329283,
+        -1.923394920047059,
+        -5.251313975242284,
+        1.9311668064065826,
+        -19.316354213778475,
+        -33.02641329577296,
+        -24.009466346869484,
+        -8.5183697838812,
+        -0.004262918230807883,
+        -13.233311695714384,
+        -22.764131545433514,
+        -18.503477462508613,
+        -27.240134635321155,
+        1.3048536666629844
+      ]
+    }
+  }
+}
