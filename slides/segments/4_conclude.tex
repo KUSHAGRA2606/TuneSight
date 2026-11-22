@@ -7,8 +7,8 @@
         \toprule
         & \textbf{Course concept} & \textbf{How TuneSight uses it} & \textbf{Slide}\\
         \midrule
-        \tagS & Sampling, DFT/FFT, windowing, STFT & mode frequencies to a hundredth of a cent; decay from band-energy slopes & \pageref{sl:audio2}\\
-        \tagS & LTI systems, impulse response, linear prediction, source--filter model & the bowl is an all-pole filter; LPC poles give frequency and damping & \pageref{sl:audio1}\\
+        \tagS & Sampling, DFT/FFT, windowing, STFT & the ring frequencies (modes) of each strike, and how fast each fades & \pageref{sl:hearing}\\
+        \tagS & LTI systems, impulse response, linear prediction, source--filter model & the tap is the source, the bowl the filter; LPC cross-checks the modes & \pageref{sl:hearing}\\
         \tagV & Thresholding (Otsu), morphology, contours & bowl silhouettes from a backlit frame & \pageref{sl:vision}\\
         \tagV & Colour spaces (HSV), intensity profiles & the water line from row saturation (edge step for clear water) & \pageref{sl:vision}\\
         \tagV & Camera geometry, fiducial markers & centimetres and millilitres from an ArUco marker & \pageref{sl:vision}\\
@@ -36,8 +36,8 @@
         \scriptsize
         \begin{enumerate}
             \item \textbf{A law beats a dataset.} With the right physics, 5 taps give \EfiveFive~cents; a black box would need many labelled strikes.
-            \item \textbf{Check an estimator's assumptions.} Burg also predicts backwards, which suits stationary signals \cite{burg1975maximum};
-                  a decaying ring is not one. Forward-only covariance LPC \cite{kumaresan1982estimating} is exact.
+            \item \textbf{Check a method's assumptions.} The textbook method (Burg \cite{burg1975maximum}) assumes a sound that does
+                  not fade; a ringing bowl fades, so it got the fading 99\,\% wrong. A method without that assumption \cite{kumaresan1982estimating} is exact.
         \end{enumerate}
     \column{0.48\textwidth}
         \scriptsize

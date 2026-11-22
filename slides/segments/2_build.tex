@@ -11,11 +11,11 @@
         \node[tile=micc] at (2, 0) {{\Large\textbf{\textcolor{micc}{\EsixTunedHidden\,\%}}}\\[3pt]
             \scriptsize which of 5 identical bowls rang; striker hidden, 10~dB SNR\\[2pt]{\tiny slide \pageref{sl:results1}}};
         \node[tile=fusc] at (0, -1) {{\Large\textbf{\textcolor{fusc}{\EsixFusedZero{} vs \EsixAudioZero\,\%}}}\\[3pt]
-            \scriptsize fused vs audio alone at 0~dB: inverse effectiveness, measured\\[2pt]{\tiny slide \pageref{sl:results1}}};
+            \scriptsize fused vs audio alone at 0~dB: two clues beat one\\[2pt]{\tiny slide \pageref{sl:results1}}};
         \node[tile=camc] at (1, -1) {{\Large\textbf{\textcolor{camc}{\EsevenIdTap\ cents}}}\\[3pt]
             \scriptsize tuning error for raga Bhupali after one check tap\\[2pt]{\tiny slide \pageref{sl:results2}}};
         \node[tile=gray] at (2, -1) {{\Large\textbf{\textcolor{gray!60!black}{No dataset}}}\\[3pt]
-            \scriptsize one law plus Bayesian regression; every number is physical\\[2pt]{\tiny slide \pageref{sl:physics}}};
+            \scriptsize one physical law, learned from a few taps\\[2pt]{\tiny slide \pageref{sl:physics}}};
     \end{tikzpicture}}
     \vspace{2mm}
     \begin{block}{What I built}
@@ -26,8 +26,8 @@
     \end{block}
 \end{frame}
 
-% ------------------------------------------------------------------ system architecture
-\begin{frame}{System architecture: two modalities, one law}
+% ------------------------------------------------------------------ how it works: the big picture
+\begin{frame}{How it works: two senses, one law}
     \label{sl:arch}
     \centering
     \resizebox{\linewidth}{!}{%
@@ -37,137 +37,126 @@
         phy/.style={box, draw=phyc, fill=phyc!12, minimum width=28mm}, fus/.style={box, draw=fusc, fill=fusc!10, minimum width=28mm},
         outbox/.style={box, draw=fusc, fill=fusc!18, minimum height=7mm, minimum width=23mm},
         lab/.style={font=\tiny, inner sep=2.5pt}]
-        \foreach \x/\t in {0/sensors, 3.0/features, 7.3/reasoning, 11.2/outputs}
+        \foreach \x/\t in {0/sensors, 3.0/what each sense measures, 7.3/reasoning, 11.6/outputs}
             \node[font=\tiny\itshape, text=gray] at (\x, 2.0) {\t};
         \node[cam] (camera) at (0, 1.15) {\textbf{Camera}\\video frames};
-        \node[cam] (vision) at (3.0, 1.15) {\textbf{Vision}\\water line, ArUco,\\striker tip};
-        \node[mic] (micro) at (0, -1.15) {\textbf{Microphone}\\48 kHz audio};
-        \node[mic] (audio) at (3.0, -1.15) {\textbf{Audio}\\onset, FFT modes,\\LPC poles};
-        \node[phy] (phys) at (7.3, 1.15) {\textbf{Physics, learned}\\$1/f^2 = a + b\,u^n$\\evidence picks $n$, $r_0$};
-        \node[fus] (fusion) at (7.3, -1.15) {\textbf{Fusion}\\audio $\times$ motion\\+ ``none'' check};
-        \node[outbox] (tune) at (11.2, 1.15) {Tune to a raga};
-        \node[outbox] (which) at (11.2, -0.7) {Which bowl?};
-        \node[outbox] (sargam) at (11.2, -1.6) {Sargam notation};
+        \node[cam] (vision) at (3.0, 1.15) {\textbf{Vision}\\fill of each bowl,\\striker position};
+        \node[mic] (micro) at (0, -1.15) {\textbf{Microphone}\\sound};
+        \node[mic] (audio) at (3.0, -1.15) {\textbf{Audio}\\strike time,\\pitch};
+        \node[phy] (phys) at (7.3, 1.15) {\textbf{The law}\\water level $\to$ pitch\\learned from taps};
+        \node[fus] (fusion) at (7.3, -1.15) {\textbf{Fusion}\\sound $\times$ motion clue\\+ ``none of these''};
+        \node[outbox] (tune) at (11.6, 1.15) {Tune to a raga};
+        \node[outbox] (which) at (11.6, -0.7) {Which bowl?};
+        \node[outbox] (sargam) at (11.6, -1.6) {Sargam notation};
         \draw[->, camc] (camera) -- (vision);
         \draw[->, micc] (micro) -- (audio);
-        \draw[->, camc] (vision) -- node[lab, above] {fill ratio $r_b$} (phys);
+        \draw[->, camc] (vision) -- node[lab, above] {fill ratio $r$} (phys);
         \draw[->, micc] (audio) -- node[lab, below] {pitch $f$} (fusion);
         \draw[->, camc, dashed] (vision.south east) -- node[lab, sloped, above, pos=0.45] {striker tip} (fusion.north west);
-        \draw[->, phyc] ([xshift=6mm]phys.south) -- node[lab, right] {$\hat f_b$ per bowl} ([xshift=6mm]fusion.north);
+        \draw[->, phyc] ([xshift=6mm]phys.south) -- node[lab, right, align=left] {predicted pitch\\of every bowl} ([xshift=6mm]fusion.north);
         \draw[->, fusc] ([xshift=-6mm]fusion.north) -- node[lab, left] {learn} ([xshift=-6mm]phys.south);
-        \draw[->, phyc] (phys) -- node[lab, above] {water $r^\ast_b$} (tune);
+        \draw[->, phyc] (phys) -- node[lab, above] {water level} (tune);
         \draw[->, fusc] (fusion.east) -- (which.west);
         \draw[->, fusc] (fusion.east) -- (sargam.west);
     \end{tikzpicture}}
     \vspace{1mm}
-    \begin{block}{Per strike}
+    \begin{block}{Every strike, in four steps}
         \scriptsize
-        \textbf{1. Vision:} each bowl's fill ratio $r_b$ just before the strike; the striker tip at impact.\\
-        \textbf{2. Audio:} onset, pitch $f$ (lowest strong mode), modes $f_k$ and their damping $\sigma_k$.\\
-        \textbf{3. Fusion:} match $f$ to every predicted $\hat f_b = \hat f(r_b)$, add the striker cue, pick the bowl.\\
-        \textbf{4. Learning:} each tap adds a pair $(r_b, f)$ to the law, so \emph{audio teaches vision}.
+        \textbf{1. Camera:} how full each bowl is just before the strike, and where the striker tip lands.\\
+        \textbf{2. Microphone:} when the strike happened and what pitch it made.\\
+        \textbf{3. Fusion:} compare the pitch with every bowl's \emph{predicted} pitch, add the striker clue, pick the bowl.\\
+        \textbf{4. Learning:} the tap adds one (fill, pitch) point to the law, so the sound teaches the camera.
     \end{block}
 \end{frame}
 
-% ------------------------------------------------------------------ slide 5
-\begin{frame}{Audio I: a struck bowl is a source--filter system}
-    \label{sl:audio1}
-    \centering
-    \resizebox{0.98\linewidth}{!}{%
-    \begin{tikzpicture}[font=\scriptsize, >={Stealth[length=2mm]}]
-        \draw[->] (0,0) -- (1.3,0);
-        \draw[thick] (0.25,0) -- (0.25,0.9); \fill (0.25,0.9) circle (0.05);
-        \node at (0.65,-0.3) {tap $\approx\delta[n]$};
-        \draw[->, thick] (1.45,0.4) -- (2.05,0.4);
-        \node[draw=phyc, fill=phyc!12, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=1.0cm] at (3.05,0.4)
-            {bowl (filter)\\$H(z) = \dfrac{G}{A(z)}$};
-        \draw[->, thick] (4.05,0.4) -- (4.65,0.4);
-        \draw[->] (4.75,0.4) -- (8.0,0.4);
-        \draw[micc] plot[domain=0:3.1, samples=260] ({4.8+\x},{0.4+0.6*exp(-1.1*\x)*sin(1000*\x)});
-        \node at (6.4,-0.3) {ring $y[n]$};
-        \begin{scope}[shift={(9.4,0.4)}]
-            \draw[gray] (0,0) circle (0.75);
-            \draw[gray!50] (-0.9,0) -- (0.9,0); \draw[gray!50] (0,-0.9) -- (0,0.9);
-            \foreach \a/\r in {35/0.71, 80/0.69, 130/0.66} { \node[micc] at (\a:\r) {$\times$}; \node[micc] at (-\a:\r) {$\times$}; }
-            \draw[->, camc] (0,0) -- (35:0.62) node[pos=0.5, above, sloped, font=\tiny, inner sep=1pt] {$r_k$};
-            \node at (0,-1.1) {$z$-plane: poles $z_k$ just inside $|z| = 1$};
-        \end{scope}
-    \end{tikzpicture}}
-    \vspace{-1mm}
-    \begin{definition}[Modal impulse response]
+% ------------------------------------------------------------------ assumptions
+\begin{frame}{The assumptions, and why they are reasonable}
+    \label{sl:assumptions}
+    \scriptsize
+    \renewcommand{\arraystretch}{1.12}
+    \begin{tabular}{@{}>{\raggedright\arraybackslash}p{0.335\linewidth} >{\raggedright\arraybackslash}p{0.30\linewidth} >{\raggedright\arraybackslash}p{0.30\linewidth}@{}}
+        \toprule
+        \textbf{Assumption} & \textbf{Why it is reasonable} & \textbf{If it fails} \\
+        \midrule
+        \textbf{A1.} Bowls are see-through; the water is coloured & the water line is visible by its colour & opaque bowls: look from the top \\
+        \textbf{A2.} Same-shape bowls share one law & same glass, same physics \cite{french1983} & one check tap per bowl corrects it \\
+        \textbf{A3.} Pitch = lowest strong ring, 150~Hz--8~kHz & the range of glass tumblers & a hum must also start at the strike and fade \\
+        \textbf{A4.} One bowl is struck at a time & each sound has one source & needs multi-pitch analysis \\
+        \textbf{A5.} The water is read just before the strike & then no hand hides it & use the last clear frames \\
+        \textbf{A6.} The camera is fixed; bowls stay in place & each bowl keeps its identity & detect the bowls again \\
+        \textbf{A7.} Camera and mic make independent errors & different sensors, different noise & fusion becomes over-confident \\
+        \bottomrule
+    \end{tabular}
+    \vspace{2mm}
+    \begin{block}{Why state them}
         \scriptsize
-        After the tap, the bowl rings as $K$ damped modes:\quad
-        $y[n] = \sum_{k=1}^{K} \alpha_k\, r_k^{\,n} \cos(\omega_k n + \phi_k), \quad n \ge 0,\; 0 < r_k < 1.$
-    \end{definition}
-    \begin{proposition}[Prony; pole $\leftrightarrow$ mode]
-        \scriptsize
-        Such a $y$ satisfies an exact linear recurrence $y[n] = -\sum_{i=1}^{2K} a_i\, y[n-i]$, i.e.\ $A(z) = 1 + \sum_i a_i z^{-i}$,
-        whose roots are the poles $z_k = r_k e^{\pm j\omega_k}$. Each pole pair gives one mode:
-        \[ f_k = \frac{\omega_k f_s}{2\pi}, \qquad \sigma_k = -f_s \ln r_k, \qquad Q_k = \frac{\pi f_k}{\sigma_k}, \qquad T_{60,k} = \frac{3\ln 10}{\sigma_k}. \]
-    \end{proposition}
-    \scriptsize So linear prediction (LPC) models a struck bowl exactly as it models the vocal tract \cite{makhoul1975linear}.
+        Each assumption is a place where the system can fail. Naming it tells you what to check in a real setup,
+        and it is exactly what the ``scope for improvement'' slide removes, one by one (slide \pageref{sl:improve}).
+    \end{block}
 \end{frame}
 
-% ------------------------------------------------------------------ slide 6
-\begin{frame}{Audio II: measuring modes on a real recording}
-    \label{sl:audio2}
+% ------------------------------------------------------------------ hearing
+\begin{frame}{Hearing: from a tap to a pitch}
+    \label{sl:hearing}
     \centering
     \includegraphics[width=0.80\linewidth]{images/figures/fig_strike.pdf}
+    \vspace{-1mm}
     \begin{columns}[T]
-    \column{0.58\textwidth}
-        \scriptsize
-        \begin{itemize}
-            \item \textbf{FFT peaks} (Hann, zero-padded); a parabola through the dB levels $X$ of bins $k-1, k, k+1$:\\[2pt]
-                  $\delta = \frac12\,\frac{X_{k-1} - X_{k+1}}{X_{k-1} - 2X_k + X_{k+1}}$, \quad $\hat f = (k + \delta)\,f_s/N$
-            \item \textbf{Decay}: STFT band-energy slope $s$ (dB/s), \; $\sigma = -s/8.686$
-            \item \textbf{Covariance LPC} (no window):\\
-                  $\min_{\mathbf a} \sum_{n=p}^{N-1}\!\big(y[n] + \sum_{i=1}^{p} a_i\, y[n-i]\big)^2$
-            \item Modes must \emph{start at the strike and decay}: hum and fan lines are rejected
-        \end{itemize}
-    \column{0.40\textwidth}
-        \begin{alertblock}{Accuracy (simulated)}
+    \column{0.47\textwidth}
+        \begin{block}{The idea: a source and a filter}
             \scriptsize
-            At 40~dB SNR:\\
-            pitch error \EoneFreq\ cents;\\
-            decay-rate error: STFT \EoneSTFT\,\%, LPC \EoneLPC\,\%.\\[2pt]
-            Burg's method fails here: its \emph{backward} prediction sees the decaying ring as growing, so its damping is about 99\,\% too low.
-        \end{alertblock}
+            The tap is a short click (the \emph{source}). The bowl rings at a few fixed frequencies, its
+            \emph{modes}, each fading like a bell (the \emph{filter}). It is the course's model of speech,
+            applied to a bowl. The note we hear is the lowest strong mode.
+        \end{block}
+    \column{0.51\textwidth}
+        \scriptsize
+        \textbf{Steps}
+        \begin{enumerate}
+            \item Find the strike: a sudden jump in loudness.
+            \item Spectrum (FFT): each peak is one mode (panel b).
+            \item Keep a peak only if it \emph{starts at the strike and fades}: hum and fans are ignored.
+            \item Pitch = the lowest strong peak.
+            \item Cross-check: a second method (LPC, panel c) must find the same modes.
+        \end{enumerate}
     \end{columns}
 \end{frame}
 
-% ------------------------------------------------------------------ slide 7
-\begin{frame}{Vision: the water line from pixels}
+% ------------------------------------------------------------------ seeing
+\begin{frame}{Seeing: the water level from pixels}
     \label{sl:vision}
     \centering
     \includegraphics[width=0.96\linewidth]{images/figures/fig_vision_steps.pdf}
     \vspace{-1mm}
     \begin{columns}[T]
-    \column{0.50\textwidth}
+    \column{0.52\textwidth}
         \scriptsize
-        \begin{itemize}
-            \item \textbf{Background}: closing $B = (I \oplus S) \ominus S$ removes the dark bowls
-            \item \textbf{Foreground}: $F = [\,B - I > t^\ast\,] \lor [\,\mathrm{Sat} > 60\,]$
-            \item \textbf{Otsu} \cite{otsu1979threshold}: $t^\ast = \arg\max_t\, \omega_0\,\omega_1\,(\mu_0 - \mu_1)^2$
-            \item close, fill holes, open; one contour per bowl
-        \end{itemize}
-    \column{0.48\textwidth}
+        \textbf{Steps}
+        \begin{enumerate}
+            \item \textbf{Background:} smooth away the bowls to see the empty, backlit scene.
+            \item \textbf{Objects:} pixels darker than it, or coloured, are bowl or water; an automatic (Otsu) threshold
+                  \cite{otsu1979threshold} sets ``darker''. One outline per bowl.
+            \item \textbf{Water line:} going down a bowl, the row where colour appears (panel 4).
+        \end{enumerate}
+    \column{0.46\textwidth}
         \scriptsize
-        \begin{itemize}
-            \item \textbf{Water line}: row median saturation $s(y)$; water where $s(y) > \tfrac12(s_{10}+s_{90})$; top of the run $\Rightarrow h$
-            \item \textbf{Fill ratio} $r = h/H$ (scale-free); volume $V(h) = \int_0^h \pi\,\rho(y)^2\,dy$, cm from ArUco \cite{garrido2014aruco}
-            \item \textbf{Striker tip}: lowest pixel of $|I_t - I_{\mathrm{ref}}| > 25$
-        \end{itemize}
+        \begin{enumerate}\setcounter{enumi}{3}
+            \item \textbf{Fill ratio} $r = h/H$: water height over bowl height, so no camera scale is needed.
+                  A printed marker \cite{garrido2014aruco} adds cm and ml.
+            \item \textbf{Striker tip:} the lowest new pixel at the moment of the strike.
+        \end{enumerate}
+        \textbf{Why classical vision:} every step can be checked by eye, and it needs no training data.
     \end{columns}
 \end{frame}
 
-% ------------------------------------------------------------------ slide 8
-\begin{frame}{Physics: the law that joins the two modalities}
+% ------------------------------------------------------------------ the law
+\begin{frame}{The law that joins them: more water, lower pitch}
     \label{sl:physics}
     \begin{columns}[c]
     \column{0.55\textwidth}
-        \begin{law}[Water loading, A.\,P.\ French \cite{french1983}]
+        \begin{block}{French's law for a glass \cite{french1983}}
             \scriptsize
-            \begin{minipage}[c]{0.35\linewidth}
+            \begin{minipage}[c]{0.33\linewidth}
                 \centering
                 \begin{tikzpicture}[scale=0.58, font=\tiny, >={Stealth[length=1.2mm]}]
                     \fill[watc!75] (-0.62,0.18) -- (0.62,0.18) -- (0.72,1.3) -- (-0.72,1.3) -- cycle;
@@ -175,92 +164,83 @@
                     \draw[camc, line width=0.8pt] (-0.66,0) -- (0.66,0) -- (0.88,2.4) -- (-0.88,2.4) -- cycle;
                     \draw[<->] (1.2,0) -- (1.2,2.4) node[midway, right, inner sep=1pt] {$H$};
                     \draw[<->] (-1.1,0) -- (-1.1,1.3) node[midway, left, inner sep=1pt] {$h$};
-                    \node[anchor=north, inner sep=1pt] at (0,-0.05) {base $r_0 H$};
                 \end{tikzpicture}
             \end{minipage}\hfill
-            \begin{minipage}[c]{0.63\linewidth}
-                Water adds mass to the wall:
-                \[ f(u) = \frac{f_0}{\sqrt{1 + \beta\, u^{\,n}}} \]
-                $n = 4$ (thin wall), \; $r = h/H$, \; $u = \frac{r - r_0}{1 - r_0}$.
+            \begin{minipage}[c]{0.65\linewidth}
+                \[ f = \frac{f_0}{\sqrt{1 + \beta\, r^{\,n}}}, \qquad r = \frac{h}{H} \]
+                \tiny
+                $f_0$: pitch of the empty bowl\\
+                $\beta$: how strongly water lowers it (one number per bowl type)\\
+                $n = 4$ for a thin wall\\
+                ($h$ is measured above the thick base)
             \end{minipage}
-        \end{law}
-        \begin{lemma}[Linear form and inverse]
+        \end{block}
+        \begin{block}{The logic}
             \scriptsize
-            (i) $\dfrac{1}{f^2} = a + b\,u^{\,n}$ with $a = f_0^{-2}$, $b = \beta f_0^{-2}$: linear in $(a, b)$.\\[1mm]
-            (ii) Water for a target pitch $f^\ast \le f_0$:
-            \[ r^\ast = r_0 + (1 - r_0)\Big[\frac{(f_0/f^\ast)^2 - 1}{\beta}\Big]^{1/n} \]
-        \end{lemma}
+            Water touching the wall moves with it and adds mass, so the wall vibrates more slowly.
+            A little water barely matters ($r^4$ is tiny); near the top the pitch drops fast (right, a).\\[2pt]
+            Written as $1/f^2$ against $r^n$, the law is a \textbf{straight line} (right, b), so a few taps are enough to fit it.
+        \end{block}
     \column{0.43\textwidth}
         \centering
         \includegraphics[width=\linewidth]{images/figures/fig_law_tall.pdf}
     \end{columns}
 \end{frame}
 
-% ------------------------------------------------------------------ slide 9
-\begin{frame}{Learning the law: audio teaches vision}
+% ------------------------------------------------------------------ learning from taps
+\begin{frame}{Learning the law from taps: audio teaches vision}
     \label{sl:learning}
+    \centering
+    \resizebox{\linewidth}{!}{%
+    \begin{tikzpicture}[font=\scriptsize, >={Stealth[length=2mm]}, node distance=5mm]
+        \node[stage=gray] (tap) {\textbf{Tap}\\a bowl};
+        \node[stage=gray, right=of tap] (meas) {\textcolor{camc}{camera: fill $r$}\\\textcolor{micc}{mic: pitch $f$}};
+        \node[stage=phyc, right=of meas] (pt) {\textbf{one point}\\$(r, f)$};
+        \node[stage=phyc, right=of pt] (fit) {\textbf{update}\\the line};
+        \node[stage=fusc, right=of fit] (pred) {\textbf{camera alone}\\predicts pitch};
+        \draw[->] (tap) -- (meas); \draw[->] (meas) -- (pt); \draw[->] (pt) -- (fit); \draw[->] (fit) -- (pred);
+        \draw[->, gray] (pred.south) -- ++(0,-0.35) -| node[pos=0.25, below, font=\tiny] {next tap} (tap.south);
+    \end{tikzpicture}}
+    \vspace{1mm}
     \begin{columns}[T]
-    \column{0.58\textwidth}
-        \begin{theorem}[Bayesian regression \cite{bishop2006pattern}]
-            \scriptsize
-            Let $y_i = \boldsymbol\phi_i^{\!\top}\mathbf w + \epsilon_i$, \; $\epsilon_i \sim \mathcal N(0, s_i^2)$ independent, \; $\mathbf w \sim \mathcal N(\mathbf m_0, S_0)$. Then
-            \begin{align*}
-                S_N^{-1} &= S_0^{-1} + \Phi^{\!\top}\Sigma^{-1}\Phi,\\
-                \mathbf m_N &= S_N\big(S_0^{-1}\mathbf m_0 + \Phi^{\!\top}\Sigma^{-1}\mathbf y\big),\\
-                p(\mathbf y) &= \mathcal N\big(\mathbf y;\ \Phi\mathbf m_0,\ \Sigma + \Phi S_0 \Phi^{\!\top}\big).
-            \end{align*}
-        \end{theorem}
+    \column{0.55\textwidth}
         \scriptsize
-        \textbf{Here} each tap gives camera $u_i$ and mic $f_i$: \;
-        $y_i = f_i^{-2}$, \; $\boldsymbol\phi_i = (1, u_i^{\,n})^{\!\top}$, \; $\mathbf w = (a, b)^{\!\top}$, \;
-        $s_i = \frac{2\ln 2}{1200}\,\sigma_c\, y_i$ for pitch noise $\sigma_c$ cents.\\[1.5mm]
-        \textbf{Model selection}: maximise $\ln p(\mathbf y \mid n, r_0) - \tfrac12 (n-4)^2$ on a grid
-        $\Rightarrow \hat n = \EthreeN$, $\hat r_0 = \EthreeRzero$.\\[1.5mm]
-        \textbf{Prediction}: $\hat f(r) = (\boldsymbol\phi^{\!\top}\mathbf m_N)^{-1/2}$, its variance from $\boldsymbol\phi^{\!\top} S_N\boldsymbol\phi$.
-    \column{0.40\textwidth}
-        \centering
-        \begin{tikzpicture}[font=\tiny, >={Stealth[length=1.5mm]}, nd/.style={circle, draw, minimum size=6.5mm, inner sep=0pt}]
-            \node[nd] (w) at (0,1.2) {$\mathbf w$};
-            \node[nd, draw=micc, fill=micc!15] (y) at (0,0) {$y_i$};
-            \node[nd, draw=camc, fill=camc!15] (r) at (-1.3,0) {$r_i$};
-            \node[draw, rounded corners=1pt] (nr) at (-1.3,1.2) {$n, r_0$};
-            \node[draw, rounded corners=1pt] (pr) at (1.3,1.2) {$\mathbf m_0, S_0$};
-            \draw[->] (w) -- (y); \draw[->] (r) -- (y); \draw[->] (nr) -- (y); \draw[->] (pr) -- (w);
-            \node[draw, dashed, rounded corners=2pt, fit=(r)(y), inner sep=4pt, label={[font=\tiny]below:taps $i = 1..N$}] {};
-        \end{tikzpicture}\\[0.5mm]
-        {\tiny observed: \textcolor{camc}{$r_i$ (camera)}, \textcolor{micc}{$y_i = f_i^{-2}$ (mic)}\par}
+        \begin{itemize}
+            \item \textbf{Start from physics:} a rough guess for $f_0$ and $\beta$, with wide uncertainty.
+            \item \textbf{Each tap adds one point}; Bayesian linear regression \cite{bishop2006pattern} updates the straight line
+                  \emph{and} says how sure it is.
+            \item \textbf{The data choose $n$:} the best-supported exponent is $n = \EthreeN$ (theory 4).
+            \item \textbf{Assumed noise:} pitch $\pm 8$ cents per tap; water level $\pm 0.6\,\%$ of the bowl.
+        \end{itemize}
         \vspace{1mm}
-        \includegraphics[width=0.98\linewidth]{images/figures/fig_learning.pdf}
+        \textbf{Result:} after 5 taps the camera alone predicts any bowl's pitch within \textbf{\EfiveFive\ cents} (right).
+    \column{0.43\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{images/figures/fig_learning.pdf}
     \end{columns}
 \end{frame}
 
-% ------------------------------------------------------------------ slide 10
-\begin{frame}{Fusion: which identical bowl rang?}
+% ------------------------------------------------------------------ fusion
+\begin{frame}{Which bowl rang? Combining two clues}
     \label{sl:fusion}
-    \begin{theorem}[Optimal cue combination \cite{ernst2002humans}]
-        \scriptsize
-        Independent Gaussian cues $s_i \sim \mathcal N(s, \sigma_i^2)$: the maximum-likelihood estimate is
-        $\hat s = \sum_i w_i s_i$, \; $w_i = \sigma_i^{-2} / \sum_j \sigma_j^{-2}$, with
-        $\sigma_{\hat s}^{-2} = \sum_i \sigma_i^{-2}$, never worse than the best cue.
-    \end{theorem}
     \begin{columns}[T]
-    \column{0.55\textwidth}
-        \begin{definition}[Fusion rule over bowls $b$]
-            \scriptsize
-            \centerline{$p(b \mid A, M) \;\propto\; p(b)\, \exp\big(w_A\, \ell_A(b) + w_M\, \ell_M(b)\big)$}
-            \begin{itemize}
-                \item audio: $\ell_A(b) = \ln \mathcal N(c_b;\, 0,\, \sigma_b^2)$, \; $c_b = c(f_{\mathrm{heard}}, \hat f_b)$
-                \item $\sigma_b^2 = \sigma_{\mathrm{pred},b}^2 + 8^2 + 10^2$ (law + pitch + floor)
-                \item motion: $\ell_M(b) = -\frac12\big(\frac{d_x}{0.15\,W_b}\big)^2 - \frac12\big(\frac{d_y}{0.2\,H_b}\big)^2$
-                \item $b = \varnothing$ (``none of these''): uniform over $\pm 1200$ cents
-            \end{itemize}
-            $c(f, g) = 1200\log_2(f/g)$ cents; \; $(d_x, d_y)$: striker tip to bowl $b$.
-        \end{definition}
-    \column{0.43\textwidth}
+    \column{0.54\textwidth}
+        \scriptsize
+        \begin{itemize}
+            \item \textbf{Clue 1, sound:} the camera predicts each bowl's pitch from its water. The closer the heard pitch is
+                  to a bowl's prediction, the higher that bowl scores (top right).
+            \item \textbf{Clue 2, motion:} the striker tip lands on one bowl; nearby bowls score higher.
+            \item \textbf{Combine:} multiply the two scores, trusting each clue by how reliable it is \emph{now}
+                  \cite{ernst2002humans}: noisy sound $\Rightarrow$ trust motion; hidden striker $\Rightarrow$ trust sound.
+            \item \textbf{Safety:} if no prediction fits the sound, the answer is ``none of these''.
+        \end{itemize}
+        \vspace{1mm}
+        \textbf{Assumes} the two clues make independent errors (A7).
+    \column{0.44\textwidth}
         \centering
         \resizebox{\linewidth}{!}{%
         \begin{tikzpicture}[font=\tiny, x=0.9cm, y=0.9cm]
-            \draw[->] (0,0) -- (4.4,0) node[right] {$f$};
+            \draw[->] (0,0) -- (4.4,0) node[right] {pitch};
             \foreach \c/\lab in {0.6/1, 1.4/2, 2.2/3} {
                 \pgfmathsetmacro{\lo}{\c-0.4}\pgfmathsetmacro{\hi}{\c+0.4}
                 \draw[phyc, thick] plot[domain=\lo:\hi, samples=40] (\x,{0.9*exp(-((\x-\c)^2)/0.016)});
@@ -268,8 +248,8 @@
             }
             \draw[phyc, thick] plot[domain=2.85:3.65, samples=40] (\x,{0.9*exp(-((\x-3.25)^2)/0.016)});
             \node[phyc, anchor=west] at (3.45,0.7) {4 and 5};
-            \draw[micc, dashed, thick] (3.25,0) -- (3.25,1.05) node[above] {$f_{\mathrm{heard}}$};
-            \node at (2.1,-0.3) {camera + law: $\hat f_b \pm \sigma_b$ for bowls $b = 1..5$};
+            \draw[micc, dashed, thick] (3.25,0) -- (3.25,1.05) node[above] {heard};
+            \node at (2.1,-0.3) {predicted pitch of bowls 1--5 (from the camera)};
         \end{tikzpicture}}\\[2mm]
         \resizebox{\linewidth}{!}{%
         \begin{tikzpicture}[font=\scriptsize, x=1cm, y=1cm]
@@ -278,55 +258,44 @@
             \bars{3.5}{fusc}{0.0}{0.0}{0.0}{0.08}{0.92}
             \draw (-0.1,0) -- (4.9,0);
             \node at (1.52,0.5) {$\times$}; \node at (3.27,0.5) {$=$};
-            \node[font=\tiny] at (0.645,-0.18) {audio}; \node[font=\tiny] at (2.395,-0.18) {motion}; \node[font=\tiny] at (4.145,-0.18) {fused};
-            \node[font=\tiny, align=center] at (2.4,-0.62) {bowls 4 and 5 hold the same water:\\audio is 50/50, the striker's motion decides};
+            \node[font=\tiny] at (0.645,-0.18) {sound}; \node[font=\tiny] at (2.395,-0.18) {motion}; \node[font=\tiny] at (4.145,-0.18) {combined};
+            \node[font=\tiny, align=center] at (2.4,-0.62) {bowls 4 and 5 hold the same water:\\sound is 50/50, the striker's motion decides};
         \end{tikzpicture}}
     \end{columns}
-    \vspace{1mm}
-    \scriptsize
-    \textbf{Inverse effectiveness} \cite{stein1993merging}: $w_A = 0.2 + 0.8\,\mathrm{clip}\big(\tfrac{\mathrm{SNR}-10}{25}, 0, 1\big)$, \;
-    $w_M$ = striker-tip confidence: the weaker one cue, the more the other decides.
 \end{frame}
 
-% ------------------------------------------------------------------ slide 11
+% ------------------------------------------------------------------ tuning
 \begin{frame}{Tuning by sight: from a raga to millilitres}
     \label{sl:tuning}
     \begin{columns}[T]
-    \column{0.52\textwidth}
-        \begin{definition}[Raga targets]
-            \scriptsize
-            Just intonation, $f^\ast_k = \rho_k\,\mathrm{Sa}$. Raga Bhupali:\\[1mm]
-            \centerline{\begin{tabular}{@{}ccccc@{}}
-                Sa & Re & Ga & Pa & Dha\\ \hline
-                $1$ & $\tfrac98$ & $\tfrac54$ & $\tfrac32$ & $\tfrac53$
-            \end{tabular}}
-        \end{definition}
-        \begin{definition}[Auto-Sa]
-            \scriptsize
-            Bowl $k$ spans $[f_k^{\min}, f_k^{\max}] = [f_k(0.9), f_k(0)]$. Choose the Sa with the largest safety margin (cents):
-            \begin{gather*}
-                m_k(\mathrm{Sa}) = \min\{c(f_k^{\max}, \rho_k\mathrm{Sa}),\; c(\rho_k\mathrm{Sa}, f_k^{\min})\},\\
-                \mathrm{Sa}^\ast = \arg\max_{\mathrm{Sa}}\; \min_k\; m_k(\mathrm{Sa}).
-            \end{gather*}
-        \end{definition}
-    \column{0.46\textwidth}
+    \column{0.53\textwidth}
         \scriptsize
-        \begin{itemize}
-            \item Target water from the inverse law: $r^\ast_b = r^\ast(f^\ast_b)$; pour $\Delta V = V(r^\ast_b) - V(r_b)$ ml
-            \item Water is easy to add, hard to remove $\Rightarrow$ the first stop is one semitone early, at $f^\ast_b\, 2^{100/1200}$
-            \item One tap measures the bowl's offset from the shared law, $\Delta_b = c(f_{\mathrm{heard}}, \hat f_b(r))$; then
-                  $\hat f_b \leftarrow \hat f_b\, 2^{\Delta_b/1200}$ and top up
-        \end{itemize}
+        Raga Bhupali; each note is a fixed ratio of Sa:\\[1mm]
+        \centerline{\begin{tabular}{@{}ccccc@{}}
+            Sa & Re & Ga & Pa & Dha\\ \hline
+            $1$ & $\tfrac98$ & $\tfrac54$ & $\tfrac32$ & $\tfrac53$
+        \end{tabular}}
+        \vspace{1mm}
+        \begin{enumerate}
+            \item \textbf{Pick Sa} so every note is reachable: water can only \emph{lower} a bowl's pitch.
+            \item \textbf{Turn the law around:} note $\to$ water level $\to$ ml to pour (from the bowl's shape).
+            \item \textbf{Stop one semitone early:} water is easy to add, hard to remove.
+            \item \textbf{Tap once:} it shows how this bowl differs from the shared law; correct, then top up.
+        \end{enumerate}
+    \column{0.45\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{images/figures/anim_tune.jpg}\\[-0.5mm]
+        {\tiny The camera's pitch gauge stops the pour; one tap fixes the last cents.\par}
     \end{columns}
-    \vspace{1mm}
+    \vspace{2mm}
     \centering
     \resizebox{\linewidth}{!}{%
     \begin{tikzpicture}[font=\scriptsize, >={Stealth[length=2mm]}, node distance=4mm]
-        \node[stage=camc] (plan) {\textbf{Plan}\\Auto-Sa, $r^\ast_b$};
-        \node[stage=camc, right=of plan] (pour) {\textbf{Pour}\\camera tracks $r$};
-        \node[stage=phyc, right=of pour] (stop) {\textbf{Stop early}\\at $f^\ast_b\, 2^{100/1200}$};
-        \node[stage=micc, right=of stop] (tap) {\textbf{Tap}\\measure $\Delta_b$};
-        \node[stage=camc, right=of tap] (top) {\textbf{Top up}\\corrected $\hat f_b$};
+        \node[stage=camc] (plan) {\textbf{Plan}\\Sa, water levels};
+        \node[stage=camc, right=of plan] (pour) {\textbf{Pour}\\camera tracks the level};
+        \node[stage=phyc, right=of pour] (stop) {\textbf{Stop early}\\one semitone sharp};
+        \node[stage=micc, right=of stop] (tap) {\textbf{Tap}\\measure the offset};
+        \node[stage=camc, right=of tap] (top) {\textbf{Top up}\\corrected target};
         \node[stage=fusc, right=of top] (ok) {\textbf{Verify}\\tap: error in cents};
         \draw[->] (plan) -- (pour); \draw[->] (pour) -- (stop); \draw[->] (stop) -- (tap); \draw[->] (tap) -- (top); \draw[->] (top) -- (ok);
         \draw[->, gray] (ok.south) -- ++(0,-0.3) -| node[pos=0.25, below, font=\tiny] {next bowl} (pour.south);

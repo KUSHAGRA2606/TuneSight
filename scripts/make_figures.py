@@ -312,11 +312,12 @@ def _draw_law(axs, b, fills, pitches, cal, tall):
     x, y, xl, yl = cal.law_points()
     axs[1].plot(x, 1e6 * y, "o", ms=3.5, color=BLUE)
     axs[1].plot(xl, 1e6 * yl, color=RED)
-    xlabel = (f"u^n  (n = {cal.n:.2f})" if tall
+    # the slide (tall) version uses the slide's symbol r: the fill ratio measured above the bowl's thick base
+    xlabel = (f"r^n  (n = {cal.n:.2f})" if tall
               else f"u^n   (u = (h/H - r0)/(1 - r0),  n = {cal.n:.2f})")
     axs[1].set(xlabel=xlabel, ylabel="1e6 / f^2", title="(b) the law is a straight line")
     if tall:   # the line runs bottom-left to top-right: the top-left and bottom-right corners are free
-        axs[1].text(0.04, 0.95, "1/f^2 = a + b u^n", transform=axs[1].transAxes, va="top", fontsize=6.3)
+        axs[1].text(0.04, 0.95, "1/f^2 = a + b r^n", transform=axs[1].transAxes, va="top", fontsize=6.3)
     else:
         axs[1].text(0.97, 0.06, "1/f^2 = a + b u^n\nBayesian linear regression;\nevidence selects n and r0",
                     transform=axs[1].transAxes, ha="right", va="bottom", fontsize=6.3)
@@ -463,7 +464,7 @@ def copy_assets():
     if shot.exists():
         shutil.copy(shot, dst / shot.name)
         shutil.copy(shot, PNG_DIR / shot.name)
-    for name, out in (("WhichBowl.jpg", "anim_which.jpg"),):   # ManimGL still shown on the last content slide
+    for name, out in (("WhichBowl.jpg", "anim_which.jpg"), ("TuneBySight.jpg", "anim_tune.jpg")):   # ManimGL stills on slides
         src = ROOT / "web" / "media" / name
         if src.exists():
             shutil.copy(src, dst / out)
