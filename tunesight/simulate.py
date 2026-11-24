@@ -42,6 +42,17 @@ class SimBowl:
         return np.array(fr), np.array(sig), np.array(self.amps)
 
 
+def family_bowl(x_cm: float, R_mean_cm: float, H_cm: float, taper: float = 0.8, a_mm: float = 1.5) -> SimBowl:
+    """A container whose pitch follows from its shape and wall thickness (French's thin-wall model).
+
+    taper = base radius / rim radius; R_mean_cm is the average of the two (mid-wall).
+    """
+    from .geometry import french_beta, french_f0     # local import: geometry imports physics, not simulate
+    R_top = 2 * R_mean_cm / (1 + taper)
+    return SimBowl(x_cm=x_cm, H_cm=H_cm, D_top_cm=2 * R_top, D_bot_cm=2 * R_top * taper,
+                   f0=french_f0(R_mean_cm, H_cm, a_mm), beta=french_beta(R_mean_cm, a_mm))
+
+
 def default_bowls(n: int = 5, identical: bool = True, seed: int = 0, f0_jitter: float = 0.004) -> list[SimBowl]:
     rng = np.random.default_rng(seed)
     bowls = []

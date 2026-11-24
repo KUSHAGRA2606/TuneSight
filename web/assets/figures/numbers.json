@@ -19,5 +19,17 @@
  "EsevenDiffTap": "12.9",
  "EfourClean": "0.007",
  "EfourBlur": "0.009",
- "EfourClear": "0.009"
+ "EfourClear": "0.009",
+ "EeightR": "0.2",
+ "EeightRfar": "0.9",
+ "EeightH": "3",
+ "EeightCap": "4",
+ "EnineAvg": "375",
+ "EnineZero": "45",
+ "EnineTap": "7",
+ "EnineZeroSame": "12",
+ "EnineZeroTen": "171",
+ "EnineExp": "-2.01",
+ "EtenAbove": "1.2",
+ "EtenBelow": "14"
 }

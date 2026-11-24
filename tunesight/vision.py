@@ -25,7 +25,9 @@ def find_marker(img_bgr: np.ndarray, marker_cm: float = C.MARKER_CM):
     """Detect the ArUco marker; returns (pixels_per_cm, corner quad) or (None, None)."""
     gray = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2GRAY) if img_bgr.ndim == 3 else img_bgr
     d = cv2.aruco.getPredefinedDictionary(getattr(cv2.aruco, C.ARUCO_DICT))
-    det = cv2.aruco.ArucoDetector(d, cv2.aruco.DetectorParameters())
+    params = cv2.aruco.DetectorParameters()
+    params.cornerRefinementMethod = cv2.aruco.CORNER_REFINE_SUBPIX     # sub-pixel corners: half the scale error
+    det = cv2.aruco.ArucoDetector(d, params)
     corners, ids, _ = det.detectMarkers(gray)
     if ids is None or len(corners) == 0:
         return None, None
@@ -207,10 +209,14 @@ def measure_frame(img_bgr: np.ndarray, marker_cm: float = C.MARKER_CM, proc_widt
         x, y, w, h = cv2.boundingRect(c)
         if h < 25 or w < 15 or h > 0.95 * H:
             continue
-        # reject the scale marker if it could not be decoded (square, black/white texture inside)
+        # reject the scale marker if it could not be decoded: square, high-contrast, colourless, and
+        # 4 cm across when the scale is known (a wide container can also look square, but holds colour)
         approx = cv2.approxPolyDP(c, 0.04 * cv2.arcLength(c, True), True)
         if len(approx) == 4 and 0.8 < w / h < 1.25 and float(np.std(gray[y:y + h, x:x + w])) > 45:
-            continue
+            colourless = float(np.median(hsv[y:y + h, x:x + w, 1])) < 40
+            size_ok = ppc is None or abs(max(w, h) / ppc - marker_cm) < 0.3 * marker_cm
+            if colourless and size_ok:
+                continue
         crop = np.zeros((h, w), np.uint8)
         cv2.drawContours(crop, [c - np.array([[x, y]])], -1, 1, thickness=cv2.FILLED)
         left, right = _row_extents(crop)

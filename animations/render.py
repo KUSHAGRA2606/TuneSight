@@ -16,7 +16,7 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-SCENES = ["Pipeline", "SourceFilter", "WaterLoading", "WhichBowl", "TuneBySight"]
+SCENES = ["Pipeline", "SourceFilter", "WaterLoading", "WhichBowl", "TuneBySight", "AnyContainer"]
 
 
 def ensure_ffmpeg() -> dict:

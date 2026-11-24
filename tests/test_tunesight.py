@@ -9,6 +9,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from tunesight import audio as A          # noqa: E402
 from tunesight import fusion as F         # noqa: E402
+from tunesight import geometry as G       # noqa: E402
 from tunesight import music               # noqa: E402
 from tunesight import physics as P        # noqa: E402
 from tunesight import simulate as SIM     # noqa: E402
@@ -164,3 +165,34 @@ def test_tuning_plan_puts_every_note_inside_its_bowl_range():
 def test_pour_advice_says_stop_at_target():
     assert T.pour_advice(0.5, 0.505).startswith("STOP")
     assert "pour" in T.pour_advice(0.3, 0.5)
+
+
+# ----------------------------------------------------------------------------- shape and any container
+def test_camera_measures_radius_height_and_capacity_of_a_wide_glass():
+    b = SIM.family_bowl(12.0, R_mean_cm=4.2, H_cm=8.5, taper=0.8)       # wider than tall: once mistaken for the marker
+    obs = V.measure_frame(SIM.render_scene([b], [0.5], seed=4))
+    assert len(obs.bowls) == 1
+    s = G.shape_from_obs(obs.bowls[0])
+    assert abs(s.R_mean_cm - 4.2) < 0.05                                # within half a millimetre
+    assert abs(s.H_cm - 8.5) < 0.6
+    cap = G.frustum_capacity_ml(b.D_top_cm / 2, b.D_bot_cm / 2, b.H_cm)
+    assert abs(s.capacity_ml / cap - 1) < 0.10
+
+
+def test_family_law_predicts_a_new_glass_from_its_shape():
+    shapes = [G.Shape(H, 2 * R / 1.8, 0.8 * 2 * R / 1.8, 0.0) for R, H in ((2.6, 8), (3.2, 10), (3.9, 9), (4.4, 11.5))]
+    f0s = [G.french_f0(s.R_mean_cm, s.H_cm, 1.5) for s in shapes]
+    betas = [G.french_beta(s.R_mean_cm, 1.5) for s in shapes]
+    law = G.FamilyLaw.fit(shapes[:3], f0s[:3], betas[:3])              # the fourth glass is new
+    f0, beta = law.predict(shapes[3])
+    assert abs(cents(f0, f0s[3])) < 1 and abs(beta / betas[3] - 1) < 1e-6
+    assert abs(G.radius_exponent(shapes, f0s) + 2) < 0.05               # French: f0 ~ R^-2
+
+
+def test_level_from_pitch_inverts_the_law_and_reads_empty_as_zero():
+    f0, beta = 900.0, 3.0
+    for r in (0.4, 0.6, 0.85):
+        u = (r - G.R0_FAMILY) / (1 - G.R0_FAMILY)
+        assert abs(G.fill_from_pitch(f0 / math.sqrt(1 + beta * u ** 4), f0, beta) - r) < 1e-9
+    assert G.fill_from_pitch(f0 * 1.001, f0, beta) == 0.0
+    assert G.cents_per_percent_fill(0.8, beta) > 10 * G.cents_per_percent_fill(0.2, beta)   # flat near empty

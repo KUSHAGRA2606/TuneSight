@@ -11,20 +11,16 @@
             \draw[camc, line width=0.9pt] ({\x-0.45},0) -- ({\x+0.45},0) -- ({\x+0.57},1.75) -- ({\x-0.57},1.75) -- cycle;
         }
         \foreach \i/\n in {0/Sa, 1/Re, 2/Ga, 3/Pa, 4/Dha} { \node at ({0.8+1.6*\i},-0.5) {\n}; }
-        % striker touching bowl 3
         \draw[brown!70!black, line width=2.2pt, line cap=round] (4.05,1.78) -- (5.3,3.0);
         \node[anchor=west] at (5.35,3.0) {striker};
-        % camera
         \draw[camc, fill=camc!15, rounded corners=1pt] (-2.35,0.55) rectangle (-1.15,1.25);
         \draw[camc, fill=white] (-1.05,0.9) circle (0.16);
         \node[camc] at (-1.75,1.5) {camera};
-        % microphone
         \draw[micc, fill=micc!15, rounded corners=3pt] (8.85,1.05) rectangle (9.25,1.75);
         \draw[micc] (9.05,1.05) -- (9.05,0.0);
         \node[micc] at (9.05,2.0) {mic};
-        % laptop
         \node[draw, rounded corners=2pt, fill=fusc!10, draw=fusc, align=center] (pc) at (3.9,-1.55) {laptop: \textbf{TuneSight}};
-        \draw[->, camc, thick] (-1.75,0.55) |- node[pos=0.75, below] {video: $h/H$, tip} (pc.west);
+        \draw[->, camc, thick] (-1.75,0.55) |- node[pos=0.75, below] {video: water, shape, tip} (pc.west);
         \draw[->, micc, thick] (9.05,-0.0) |- node[pos=0.75, below] {audio: pitch $f$} (pc.east);
     \end{tikzpicture}}
     \vspace{2mm}
@@ -38,18 +34,19 @@
             \item \textbf{Explainable, easy to demo live:} glasses, water, a webcam, a mic.
         \end{itemize}
     \column{0.47\textwidth}
-        \begin{block}{Two questions, one law}
+        \begin{block}{Three questions, one law}
             \scriptsize
             \textbf{Q1.} Which of several \emph{identical} bowls was struck?\\
-            \textbf{Q2.} How much water makes a bowl play a chosen swara?\\[3pt]
-            One law $f(r)$ between the camera's fill ratio $r = h/H$ and the heard pitch $f$,
-            \emph{learned from a few taps}, answers both.
+            \textbf{Q2.} How much water makes a bowl play a chosen swara?\\
+            \textbf{Q3.} Does it work for \emph{any} container, even one I cannot see into?\\[2pt]
+            One law between what the camera sees (water, shape) and the heard pitch,
+            \emph{learned from a few taps}, answers all three.
         \end{block}
     \end{columns}
 \end{frame}
 
-% ------------------------------------------------------------------ past and current work
-\begin{frame}{Past and current work: a short history}
+% ------------------------------------------------------------------ past and current work, and what is new
+\begin{frame}{Past and current work, and what is new}
     \label{sl:history}
     \centering
     \resizebox{\linewidth}{!}{%
@@ -72,45 +69,17 @@
         \node[era=phyc] (e4) at (10.5, 0) {\textcolor{phyc!75!black}{\textbf{TuneSight (this work)}}\\[4pt]
             $\bullet$ A physical law links the two senses\\[3pt]
             $\bullet$ Learns from about 5 taps; no dataset\\[3pt]
-            $\bullet$ Works for objects that look \emph{identical}};
+            $\bullet$ Works for objects that look \emph{identical}, and for new shapes};
         \foreach \x in {0, 3.5, 7.0} \draw[->, thick, gray] (\x + 1.6, -1.2) -- (\x + 1.9, -1.2);
         \draw[->, very thick, gray!70] (-1.65,-5.75) -- (12.3,-5.75) node[right, font=\scriptsize, text=gray] {time};
         \foreach \x/\t in {0/1975--1983, 3.5/1993--2014, 7.0/2016--2023, 10.5/2026}
             \node[font=\scriptsize\bfseries, text=gray!80!black, fill=white, inner sep=1.5pt] at (\x,-5.75) {\t};
     \end{tikzpicture}}
     \vspace{1mm}
-    \begin{block}{The trend, and where this work fits}
+    \begin{block}{What is new here}
         \scriptsize
-        Learned models link sound to \emph{appearance} and need large datasets. Identical bowls defeat appearance, and a musician
-        will not record a dataset, so TuneSight returns to physics and reuses the perception results for the fusion.
+        \textbf{1.} Identical-looking objects told apart by \emph{physics}, not by appearance.\\
+        \textbf{2.} Audio teaches vision from a few taps; a new container's law follows from its \emph{shape}.\\
+        \textbf{3.} A real instrument: tunes by sight, writes the sargam, \emph{hears} water the camera cannot see.
     \end{block}
-\end{frame}
-
-% ------------------------------------------------------------------ what is new
-\begin{frame}{Where this work fits: what is new}
-    \label{sl:new}
-    \scriptsize
-    \begin{tabular}{>{\raggedright\arraybackslash}p{0.46\linewidth} >{\raggedright\arraybackslash}p{0.46\linewidth}}
-        \toprule
-        \textbf{Already published} & \textbf{This project} \\
-        \midrule
-        Material recognition from image + impact sound \cite{gao2023objectfolder,zhang2017shape} &
-            not claimed; only the modal (pole) model of sound is reused \\[2pt]
-        Liquid level from the sound of \emph{pouring} \cite{liang2019pouringnet} &
-            the \emph{struck} resonance + a physical law, taught by the camera \\[2pt]
-        Sound-source localisation by appearance \cite{owens2016visually,zhao2018sound} &
-            identical bowls defeat appearance; physics + striker motion \\[2pt]
-        Jal tarang apps (virtual instruments) &
-            tunes and transcribes a \emph{real} instrument \\
-        \bottomrule
-    \end{tabular}
-    \vspace{2mm}
-    \begin{exampleblock}{Contributions}
-        \scriptsize
-        \begin{enumerate}
-            \item \textbf{Audio-visual correspondence for visually identical sources}, through a physical law instead of appearance.
-            \item \textbf{Audio teaches vision}: online Bayesian calibration; model evidence recovers French's exponent $n\approx 4$ from data.
-            \item \textbf{Vision-guided tuning} of a raga with one verification tap per bowl, and live sargam transcription.
-        \end{enumerate}
-    \end{exampleblock}
 \end{frame}

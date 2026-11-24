@@ -1,6 +1,6 @@
 # TuneSight results
 
-_generated 2026-11-19 19:21_
+_generated 2026-11-24 22:01_
 
 
 ## E1 Audio model (SIMULATED ground truth)
@@ -118,3 +118,28 @@ Example run (near-identical bowls), Sa = 630.6 Hz:
 | Dha | 1051.0 | +23.2 | +4.0 |
 
 ![](figures/e7_tuning_sim.png)
+
+
+## E8 Container shape from the camera (SIMULATED, random glasses: radius 2.5-4.5 cm, height 7-12 cm)
+
+| camera | found | mean radius error | rim radius error | height error | capacity error |
+|---|---|---|---|---|---|
+| 18 px/cm | 100% | 0.16 mm | 0.29 mm | 2.9 mm | 4.0 % |
+| 12 px/cm | 100% | 0.91 mm | 1.01 mm | 4.9 mm | 10.7 % |
+| 18 px/cm, blur 2 px | 100% | 0.28 mm | 0.64 mm | 3.3 mm | 5.8 % |
+
+## E9 A new container's pitch from its shape (SIMULATED, leave one container out)
+
+French's thin-wall model: empty pitch ~ 1/R^2, water effect ~ R. Two family constants are fitted on the other containers; fitted radius exponent -2.01 (theory -2).
+
+| family | family average, shape ignored | shape, zero taps | shape + 1 check tap |
+|---|---|---|---|
+| 0% wall-thickness spread | 396.1 cents | 11.8 cents | 6.0 cents |
+| 3% wall-thickness spread | 375.2 cents | 44.6 cents | 7.0 cents |
+| 10% wall-thickness spread | 610.4 cents | 171.0 cents | 12.2 cents |
+
+## E10 Hearing the water level of an opaque container (SIMULATED)
+
+One tap on the empty container gives f0, the shape gives beta, then each tap's pitch gives the level.
+
+Median level error: 1.2 % of the height above 35 % full (90th percentile 2.0 %); 14 % below 30 % full, where the law is flat and the pitch barely changes.

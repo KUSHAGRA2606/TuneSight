@@ -22,6 +22,7 @@ from scipy import signal  # noqa: E402
 
 from tunesight import audio as A  # noqa: E402
 from tunesight import config as C  # noqa: E402
+from tunesight import geometry as G  # noqa: E402
 from tunesight import objectfolder as OF  # noqa: E402
 from tunesight import physics as P  # noqa: E402
 from tunesight import simulate as SIM  # noqa: E402
@@ -407,6 +408,144 @@ def fig_robust(M):
     save(fig, "fig_robust")
 
 
+# ----------------------------------------------------------------------------- beyond identical glasses
+def fig_shape():
+    """What the camera measures on one container: rim and base radius, height, capacity and water volume."""
+    b = SIM.family_bowl(12.0, 3.6, 10.0, 0.78)
+    img = SIM.render_scene([b], [0.55], seed=11)
+    obs = V.measure_frame(img)
+    o = obs.bowls[0]
+    s = G.shape_from_obs(o)
+    small = cv2.resize(img, None, fx=obs.scale, fy=obs.scale, interpolation=cv2.INTER_AREA)
+    x, y, w, h = o.bbox
+    x0, x1, y0, y1 = max(0, x - int(0.12 * w)), min(small.shape[1], x + int(2.2 * w)), max(0, y - 22), min(small.shape[0], y + h + 16)
+    fig, ax = plt.subplots(figsize=(2.6, 2.0))
+    ax.imshow(small[y0:y1, x0:x1, ::-1], extent=(x0, x1, y1, y0))
+    ppc = o.ppc
+    yb = o.bottom_y + 0.5
+    for sign in (-1, 1):                               # the fitted walls (mid-wall line + half the wall)
+        xs = [o.axis_x + sign * (s.R_bot_cm + G.WALL_CM / 2) * ppc, o.axis_x + sign * (s.R_top_cm + G.WALL_CM / 2) * ppc]
+        ax.plot(xs, [yb, yb - s.H_cm * ppc], color=BLUE, lw=1.4)
+    yt = yb - s.H_cm * ppc
+    ax.annotate("", (o.axis_x + s.R_top_cm * ppc, yt - 6), (o.axis_x, yt - 6), arrowprops=dict(arrowstyle="<->", color=RED, lw=1))
+    ax.text(o.axis_x + s.R_top_cm * ppc / 2, yt - 9, f"R = {s.R_top_cm:.1f} cm", color=RED, fontsize=6.5, ha="center", va="bottom")
+    ax.annotate("", (o.axis_x + s.R_bot_cm * ppc, yb + 6), (o.axis_x, yb + 6), arrowprops=dict(arrowstyle="<->", color=RED, lw=1))
+    ax.text(o.axis_x + s.R_bot_cm * ppc / 2, yb + 8, f"{s.R_bot_cm:.1f} cm", color=RED, fontsize=6.5, ha="center", va="top")
+    xh = x + w + 6
+    Hp = yb - yt
+    ax.annotate("", (xh, yt), (xh, yb), arrowprops=dict(arrowstyle="<->", color=GREEN, lw=1))
+    ax.text(xh + 4, yt + 0.27 * Hp, f"H = {s.H_cm:.1f} cm", color=GREEN, fontsize=6.5, va="center")
+    if o.water_top_y is not None:
+        ax.plot([x + 3, x + w - 3], [o.water_top_y] * 2, color=RED, lw=1.2, ls="--")
+        n_body = int(round(s.H_cm * ppc))
+        inner = np.clip(np.asarray(o.profile_px[:n_body], float) / ppc - G.WALL_CM, 0, None)
+        wr = int(round(o.bottom_y - o.water_top_y))
+        water_ml = float(np.sum(np.pi * inner[int(G.BASE_FRAC * n_body):wr] ** 2) / ppc)
+        ax.text(xh + 4, o.water_top_y, f"water {water_ml:.0f} ml", color=NAVY, fontsize=6.5, va="center")
+    ax.text(xh + 4, yb - 0.12 * Hp, f"holds {s.capacity_ml:.0f} ml", color=NAVY, fontsize=6.5, va="center")
+    ax.text(x1 - 3, y0 + 3, f"SIMULATED\ntrue rim {b.D_top_cm / 2:.1f} cm\nheight {b.H_cm:.1f} cm",
+            fontsize=5.4, color=GREY, va="top", ha="right")
+    ax.set_xlim(x0, x1)
+    ax.set_ylim(y1, y0)
+    ax.set_axis_off()
+    ax.set_title("the camera measures the shape", fontsize=7.5)
+    save(fig, "fig_shape")
+
+
+def fig_family(M):
+    """French's thin-wall physics across containers: wider glass, lower pitch; a new glass predicted with no taps."""
+    ex = M.get("E9_family_example")
+    if not ex:
+        print("   fig_family skipped (run scripts/evaluate.py first)")
+        return
+    cs = ex["containers"]
+    R = np.array([c["R_mean_cm"] for c in cs])
+    f0 = np.array([c["f0"] for c in cs])
+    Hm = float(np.median([c["H_cm"] for c in cs]))
+    fig, axs = plt.subplots(2, 1, figsize=(2.3, 3.05))
+    rr = np.linspace(R.min() * 0.92, R.max() * 1.06, 100)
+    axs[0].plot(rr, [ex["C_f"] * G.shape_factor_f0(r, Hm) for r in rr], color=RED, lw=1.3, label="French: f0 ~ 1/R^2")
+    axs[0].plot(R, f0, "o", ms=3.8, color=BLUE, label="calibrated glasses")
+    axs[0].set(xscale="log", yscale="log", xlabel="mean radius R (cm, camera)", ylabel="empty pitch f0 (Hz)",
+               title="(a) wider glass, lower pitch")
+    axs[0].set_xticks([2.5, 3, 3.5, 4, 4.5], ["2.5", "3", "3.5", "4", "4.5"])
+    axs[0].set_yticks([500, 700, 1000, 1500], ["500", "700", "1000", "1500"])
+    axs[0].minorticks_off()
+    axs[0].legend(loc="lower left", frameon=False, fontsize=5.8)
+    axs[0].text(0.97, 0.74, f"fitted exponent {ex['radius_exponent']:.2f}\n(theory -2)", transform=axs[0].transAxes,
+                fontsize=5.8, color=GREY, ha="right", va="top")
+    order = np.argsort(R)
+    pick = [order[0], order[len(order) // 2], order[-1]]
+    xx = np.linspace(0, 0.95, 100)
+    for c, col in zip([cs[i] for i in pick], (ORANGE, GREEN, PURPLE)):
+        f0p, bp = c["loo"]
+        u = np.clip((xx - G.R0_FAMILY) / (1 - G.R0_FAMILY), 0, 1.2)
+        axs[1].plot(xx, f0p / np.sqrt(1 + bp * u ** C.FRENCH_N), color=col, lw=1.2)
+        t = np.array(c["tests"])
+        axs[1].plot(t[:, 0], t[:, 1], "o", ms=3, color=col)
+        axs[1].text(0.97, f0p / np.sqrt(1 + bp * ((0.95 - G.R0_FAMILY) / (1 - G.R0_FAMILY)) ** C.FRENCH_N),
+                    f"R {c['R_mean_cm']:.1f}", color=col, fontsize=5.6, va="center")
+    axs[1].set(xlabel="fill ratio h/H (camera)", ylabel="pitch (Hz)", xlim=(0, 1.12),
+               title="(b) new glass, zero taps\nline: from its shape; dots: heard")
+    axs[1].title.set_fontsize(6.8)
+    tag(axs[0], "SIMULATED")
+    fig.tight_layout(h_pad=0.4)
+    save(fig, "fig_family")
+
+
+def fig_newcontainer(M):
+    """How well a new container's pitch is predicted, by method and by how much the wall thickness varies."""
+    nc = M.get("E9_new_container_sim")
+    if not nc:
+        print("   fig_newcontainer skipped (run scripts/evaluate.py first)")
+        return
+    groups = list(nc)
+    methods = list(next(iter(nc.values())))
+    cols = (GREY, BLUE, GREEN)
+    labels = ("shape ignored", "shape, zero taps", "shape + 1 tap")
+    fig, ax = plt.subplots(figsize=(2.55, 2.1))
+    x = np.arange(len(groups))
+    w = 0.27
+    for j, (m, c, lab) in enumerate(zip(methods, cols, labels)):
+        v = [nc[g][m] for g in groups]
+        ax.bar(x + (j - 1) * w, v, w, color=c, label=lab)
+        for xi, vi in zip(x + (j - 1) * w, v):
+            ax.text(xi, vi * 1.12, f"{vi:.0f}", ha="center", fontsize=5.4, color=c)
+    ax.axhline(25, ls=":", color=GREY, lw=0.9, label="25 cents: in tune")
+    ax.set_yscale("log")
+    ax.set_ylim(2, 12000)
+    ax.set_xticks(x, [g.split("%")[0] + " %" for g in groups])
+    ax.set(xlabel="wall-thickness spread in the family", ylabel="median |pitch error| (cents)",
+           title="a new glass (SIMULATED)")
+    ax.title.set_fontsize(7.4)
+    ax.legend(loc="upper center", frameon=False, fontsize=5.6, ncol=2, columnspacing=0.8, handlelength=1.2)
+    fig.tight_layout()
+    save(fig, "fig_newcontainer")
+
+
+def fig_hearlevel(M):
+    """Water level of an opaque container from the sound alone, and why it fails near empty."""
+    lv = M.get("E10_level_from_sound_sim")
+    if not lv:
+        print("   fig_hearlevel skipped (run scripts/evaluate.py first)")
+        return
+    p = np.array(lv["points"])
+    fig, ax = plt.subplots(figsize=(2.55, 2.1))
+    ax.axvspan(0, 0.3, color=RED, alpha=0.08, lw=0)
+    ax.text(0.15, 0.86, "dead zone:\nthe pitch hardly\nchanges here", ha="center", va="top", fontsize=5.6, color=RED)
+    ax.plot([0, 0.95], [0, 0.95], color=GREY, lw=0.8, ls=":")
+    ax.plot(p[:, 0], p[:, 1], "o", ms=2.6, color=BLUE, alpha=0.8)
+    ax.set(xlim=(0, 0.95), ylim=(0, 0.95), xlabel="true water level h/H", ylabel="level heard from pitch",
+           title="an opaque cup: hearing the water")
+    ax.text(0.93, 0.17, f"above 35 % full:\nmedian error {100 * lv['fill_mae_above_35%']:.1f} %", ha="right",
+            fontsize=5.8, color=NAVY)
+    tag(ax, "SIMULATED")
+    ax.texts[-1].set_position((0.98, 0.03))
+    ax.texts[-1].set_va("bottom")
+    fig.tight_layout()
+    save(fig, "fig_hearlevel")
+
+
 def write_numbers(M):
     """LaTeX macros with every number quoted on the slides, taken from metrics.json (no hand-copied numbers)."""
     def g(path, default=float("nan")):
@@ -444,6 +583,19 @@ def write_numbers(M):
         "EfourClean": f"{g(['E4_vision_sim', 'clean', 'fill_mae']):.3f}",
         "EfourBlur": f"{g(['E4_vision_sim', 'blur 4px', 'fill_mae']):.3f}",
         "EfourClear": f"{g(['E4_vision_sim', 'clear water', 'fill_mae']):.3f}",
+        # beyond identical glasses (E8-E10)
+        "EeightR": f"{g(['E8_shape_sim', '18 px/cm', 'mean_radius_mae_mm']):.1f}",
+        "EeightRfar": f"{g(['E8_shape_sim', '12 px/cm', 'mean_radius_mae_mm']):.1f}",
+        "EeightH": f"{g(['E8_shape_sim', '18 px/cm', 'height_mae_mm']):.0f}",
+        "EeightCap": f"{g(['E8_shape_sim', '18 px/cm', 'capacity_mape_%']):.0f}",
+        "EnineAvg": f"{g(['E9_new_container_sim', '3% wall-thickness spread', 'family average, shape ignored']):.0f}",
+        "EnineZero": f"{g(['E9_new_container_sim', '3% wall-thickness spread', 'shape, zero taps']):.0f}",
+        "EnineTap": f"{g(['E9_new_container_sim', '3% wall-thickness spread', 'shape + 1 check tap']):.0f}",
+        "EnineZeroSame": f"{g(['E9_new_container_sim', '0% wall-thickness spread', 'shape, zero taps']):.0f}",
+        "EnineZeroTen": f"{g(['E9_new_container_sim', '10% wall-thickness spread', 'shape, zero taps']):.0f}",
+        "EnineExp": f"{g(['E9_family_example', 'radius_exponent']):.2f}",
+        "EtenAbove": f"{100 * g(['E10_level_from_sound_sim', 'fill_mae_above_35%']):.1f}",
+        "EtenBelow": f"{100 * g(['E10_level_from_sound_sim', 'fill_mae_below_30%']):.0f}",
     }
     out = ROOT / "slides" / "generated" / "numbers.tex"
     out.parent.mkdir(parents=True, exist_ok=True)
@@ -485,6 +637,10 @@ def main():
     fig_whichbowl(M)
     fig_tuning(M)
     fig_robust(M)
+    fig_shape()
+    fig_family(M)
+    fig_newcontainer(M)
+    fig_hearlevel(M)
     write_numbers(M)
     copy_assets()
     print(f"done -> {PDF_DIR}, {PNG_DIR}, slides/images/figures")

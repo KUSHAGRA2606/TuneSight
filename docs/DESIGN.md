@@ -68,6 +68,12 @@ The prediction uncertainty combines parameter uncertainty with vision noise prop
 - **Two-step tuning (how musicians actually tune):** the camera first stops the pour one semitone (100 cents) short of the note (water can only be added easily). One verification tap measures *that bowl's* pitch offset from the shared law, then the camera guides the final top-up.
 - Transcription: identified bowl → heard pitch → nearest swara relative to Sa (just intonation); notes outside the raga are shown in red.
 
+### 3.6 Any container: shape and opaque cups (`tunesight/geometry.py`)
+- **Shape from the camera:** straight walls are fitted to the outline's half-widths (10–88 % of the height, so the solid base and the rim bead do not bias them). This gives the rim and base radius (mid-wall), the height up to the rim's centre line, and the capacity in ml as a solid of revolution. The ArUco marker gives centimetres; its corners are refined to sub-pixel accuracy.
+- **French's thin-wall physics across containers:** empty pitch f₀ = (1/2π)·√(3E/5ρ_g)·(a/R²)·√(1 + (4/3)(R/H)⁴) and water effect β = α·ρ_w·R/(5ρ_g·a). The camera measures R and H; only the wall thickness a is hidden. For a *family* (same glass, same wall thickness) the unknowns collapse into two constants, f₀ = C_f·√(1 + (4/3)(R/H)⁴)/R² and β = C_b·R, fitted on a few tapped containers. A new container's whole pitch curve then follows from its shape with **zero taps**; one check tap removes the remaining offset.
+- **Hearing the level (opaque containers):** the law run backwards turns a tap's pitch into a water level. One tap on the empty container gives f₀, the shape gives β. Near empty the law is flat (r⁴ is tiny), so below about 30 % full a tap's natural variation (±8 cents) is larger than the change the water makes: a "dead zone" that the experiments quantify.
+- **Assumptions:** containers in a family share material and wall thickness; walls are thin and round (French's model); a tap varies by about 8 cents (as two real strikes of one glass did).
+
 ---
 
 ## 4. Experiments (all implemented in `scripts/evaluate.py`; each result is labelled SIMULATED or REAL)
@@ -80,6 +86,9 @@ The prediction uncertainty combines parameter uncertainty with vision noise prop
 | E5 | Audio teaches vision: camera-only pitch error vs number of taps | simulated + your session |
 | E6 | Which identical bowl was struck: chance, motion only, audio-physics only, fused, across SNR, striker visible vs hidden | simulated (live in the demo) |
 | E7 | Closed-loop tune-by-sight accuracy for a raga | simulated + live demo |
+| E8 | Container shape from the camera: radius, height, capacity (two camera distances, blur) | simulated, random glasses |
+| E9 | A new container's pitch from its shape alone (leave one out), vs ignoring shape and vs one check tap, for 0 / 3 / 10 % wall-thickness spread | simulated family of glasses |
+| E10 | The water level of an opaque container from the sound alone, and where it fails | simulated, ±8 cents tap variation |
 
 ## 5. Live demo (`python app/app.py`, or `--sim` without hardware)
 1. **Calibrate:** strike a few bowls at different levels. The *physics plot* fills in, the fitted line appears, and n ≈ 4 emerges.
@@ -93,7 +102,7 @@ The prediction uncertainty combines parameter uncertainty with vision noise prop
 
 ## 7. Implementation (complete)
 ```
-tunesight/  config · audio · vision · physics · fusion · tuning · music · simulate · session · objectfolder
+tunesight/  config · audio · vision · geometry · physics · fusion · tuning · music · simulate · session · objectfolder
 scripts/     evaluate.py · make_figures.py · build_slides.py · build_web.py · record_session.py · calibrate.py ·
              download_objectfolder.py · make_marker.py
 app/app.py   PySide6 + pyqtgraph live application (live or --sim)
@@ -108,3 +117,5 @@ Run order for real data: `record_session.py` → `calibrate.py` → `evaluate.py
 - The live room adds reverberation and noise; mitigated by a close mic and the onset/noise-floor logic.
 - Clear water is harder to see than dyed water (E4 quantifies it), hence the food colour.
 - Results marked SIMULATED validate the pipeline against known ground truth; REAL results come from your recorded session and ObjectFolder.
+- The shape law (f₀ ∝ 1/R², β ∝ R) is checked only in simulation so far; real glasses of several sizes are the next step.
+- A camera cannot see wall thickness, so a zero-tap prediction is limited by how much the thickness varies within a family; one check tap removes most of it.

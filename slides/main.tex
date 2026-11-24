@@ -19,6 +19,8 @@
                       anchor=north, font=\scriptsize}}
 \usepackage{booktabs,array,multicol}
 \input{generated/numbers}
+% clickable web links (beamer loads hyperref): coloured and underlined so they read as links
+\newcommand{\weblink}[2]{\href{#1}{\textcolor{camc}{\underline{#2}}}}
 
 \definecolor{camc}{HTML}{2F6DB5}   % camera / vision
 \definecolor{micc}{HTML}{C0392B}   % microphone / audio
@@ -41,14 +43,14 @@
 % five probability bars at x-offset #1 in colour #2 (used in the fusion sketch)
 \newcommand{\bars}[7]{\foreach \k/\h in {1/#3,2/#4,3/#5,4/#6,5/#7}{\fill[#2] ({#1+(\k-1)*0.27},0) rectangle ++(0.21,{\h*1.1});}}
 
-\setbeamerfont{bibliography item}{size=\tiny}
-\setbeamerfont{bibliography entry author}{size=\tiny}
-\setbeamerfont{bibliography entry title}{size=\tiny}
-\setbeamerfont{bibliography entry location}{size=\tiny}
-\setbeamerfont{bibliography entry note}{size=\tiny}
+\setbeamerfont{bibliography item}{size=\fontsize{5.2}{6.0}\selectfont}
+\setbeamerfont{bibliography entry author}{size=\fontsize{5.2}{6.0}\selectfont}
+\setbeamerfont{bibliography entry title}{size=\fontsize{5.2}{6.0}\selectfont}
+\setbeamerfont{bibliography entry location}{size=\fontsize{5.2}{6.0}\selectfont}
+\setbeamerfont{bibliography entry note}{size=\fontsize{5.2}{6.0}\selectfont}
 \setbeamertemplate{bibliography item}{\insertbiblabel}
 \let\oldthebibliography\thebibliography
-\renewcommand{\thebibliography}[1]{\oldthebibliography{#1}\setlength{\itemsep}{1pt}\setlength{\parskip}{0pt}%
+\renewcommand{\thebibliography}[1]{\oldthebibliography{#1}\setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}\setlength{\parsep}{0pt}%
     \def\newblock{\hskip .11em plus .33em minus .07em}}
 
 \title[TuneSight]{TuneSight: Seeing the Note, Hearing the Water}
@@ -79,46 +81,18 @@
 
 
 \section*{References}
-\begin{frame}
-    \frametitle{References: papers}
+\begin{frame}{References: papers, data, code and tools}
     \begin{multicols}{2}
     \bibliographystyle{ieeetr}
     \bibliography{ref.bib}
     \end{multicols}
-\end{frame}
-
-\begin{frame}{References: data, code, course material and tools}
-    \scriptsize
-    \begin{columns}[T]
-    \column{0.49\textwidth}
-        \textbf{Course material}
-        \begin{itemize}
-            \item DA321 lecture notes, IIT Guwahati: sound, images, multimodal fusion
-            \item SPIN Lab interactive pages (\texttt{spinlabiitg.github.io/vip}, \texttt{/sap}): design reference for the web explainer
-        \end{itemize}
-        \textbf{Data}
-        \begin{itemize}
-            \item ObjectFolder Real: impact recordings of real objects (\texttt{objectfolder.stanford.edu}) \cite{gao2023objectfolder}
-            \item Everything else: the project's physics-based simulator, with known ground truth
-        \end{itemize}
-        \textbf{This project}
-        \begin{itemize}
-            \item \texttt{github.com/KUSHAGRA2606/TuneSight}: library, desktop app, experiments, slides, web explainer
-        \end{itemize}
-    \column{0.49\textwidth}
-        \textbf{Open-source software}
-        \begin{itemize}
-            \item ManimGL by 3Blue1Brown (\texttt{github.com/3b1b/manim}): the animations
-            \item OpenCV (with ArUco), NumPy, SciPy, matplotlib
-            \item PySide6 and pyqtgraph (desktop app); sounddevice and soundfile (audio)
-            \item LaTeX Beamer with the IITG template; TikZ for every diagram
-        \end{itemize}
-        \textbf{LLM tools}
-        \begin{itemize}
-            \item Claude (Anthropic), used through Claude Code as a coding and writing assistant for the implementation, experiments,
-                  figures and slides. All results were run and checked locally.
-        \end{itemize}
-    \end{columns}
+    \vspace{-1.5mm}
+    {\color{gray!40}\hrule}\vspace{1mm}
+    {\tiny \textbf{Data:} ObjectFolder Real (\weblink{https://objectfolder.stanford.edu}{objectfolder.stanford.edu}); the rest from the project's simulator.
+    \textbf{Software:} ManimGL (\weblink{https://github.com/3b1b/manim}{github.com/3b1b/manim}), OpenCV, NumPy, SciPy, matplotlib, PySide6; Beamer (IITG template).
+    \textbf{Course:} DA321 notes; SPIN Lab pages (\weblink{https://spinlabiitg.github.io/vip/}{vip}, \weblink{https://spinlabiitg.github.io/sap/}{sap}).
+    \textbf{LLM tool:} Claude (Anthropic) via Claude Code, as a coding and writing assistant; all results were run and checked locally.
+    \textbf{Code:} \weblink{https://github.com/KUSHAGRA2606/TuneSight}{github.com/KUSHAGRA2606/TuneSight}.\par}
 \end{frame}
 
 \end{document}

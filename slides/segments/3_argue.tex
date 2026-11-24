@@ -1,39 +1,21 @@
-% ------------------------------------------------------------------ slide 12
-\begin{frame}{Results I: which of five identical bowls rang?}
-    \label{sl:results1}
-    \centering
-    \includegraphics[width=0.96\linewidth]{images/figures/fig_whichbowl.pdf}
-    \scriptsize
-    \begin{itemize}
-        \item Appearance cannot separate identical bowls: chance is 20\,\%.
-        \item Bowls tuned to a raga, striker hidden: audio through physics alone gives \textbf{\EsixHiddenTwenty\,\%} at 20~dB and \textbf{\EsixTunedHidden\,\%} at 10~dB SNR.
-        \item At 0~dB, or when two bowls hold the same water, the striker's motion decides:
-              fused \textbf{\EsixFusedZero\,\%} against \EsixAudioZero\,\% for audio alone (inverse effectiveness).
-    \end{itemize}
-\end{frame}
-
-% ------------------------------------------------------------------ slide 13
-\begin{frame}{Results II: calibration, tuning and robustness}
-    \label{sl:results2}
+% ------------------------------------------------------------------ beyond identical glasses
+\begin{frame}{Beyond identical glasses: new shapes and opaque cups}
+    \label{sl:general}
     \begin{columns}[T]
     \column{0.49\textwidth}
         \centering
-        \includegraphics[height=3.6cm]{images/figures/fig_tuning.pdf}
+        \includegraphics[width=\linewidth]{images/figures/fig_newcontainer.pdf}
     \column{0.49\textwidth}
         \centering
-        \includegraphics[height=3.6cm]{images/figures/fig_robust.pdf}
+        \includegraphics[width=\linewidth]{images/figures/fig_hearlevel.pdf}
     \end{columns}
     \vspace{1mm}
     \scriptsize
-    \centering
-    \begin{tabular}{@{}p{0.36\linewidth} p{0.60\linewidth}@{}}
-        \toprule
-        \textbf{Experiment} & \textbf{Result} \\
-        \midrule
-        Camera-only pitch error &\EfiveOne\ c (1 tap) $\to$ \textbf{\EfiveFive\ c} (5 taps) $\to$ \EfiveTen\ c (10 taps) \\
-        Law recovered from data & exponent $n = \EthreeN$ (a second fitting method: \EthreeNnl); theory $n = 4$ \\
-        Tune Bhupali (one check tap) & identical bowls \EsevenIdVision\,$\to$\,\textbf{\EsevenIdTap\ c}; 3\,\% spread \EsevenDiffVision\,$\to$\,\textbf{\EsevenDiffTap\ c} \\
-        Water level, fill-ratio error & \EfourClean\ clean, \EfourBlur\ blurred (4 px), \EfourClear\ clear water \\
-        \bottomrule
-    \end{tabular}
+    \begin{itemize}
+        \item \textbf{A new glass} (left): ignoring its shape, the pitch is \EnineAvg\ cents off; its shape alone gives \EnineZero\ cents
+              (\EnineZeroSame\ if all walls are equal); one check tap gives \EnineTap. The hidden wall thickness sets the limit.
+        \item \textbf{An opaque cup} (right): one tap when empty, then each tap's pitch gives the level, within \EtenAbove\,\% of the
+              height above 35\,\% full. Below 30\,\% the law is too flat: a tap varies more (8 cents) than the water changes it.
+        \item The fitted radius exponent is $\EnineExp$, close to French's $-2$: the camera and the taps recover the physics.
+    \end{itemize}
 \end{frame}

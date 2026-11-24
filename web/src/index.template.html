@@ -113,7 +113,9 @@ section { padding-block: 2.6rem 1.2rem; border-top: 1px solid var(--line); }
 .cv-law { aspect-ratio: 16 / 6; cursor: default; }
 .cv-which { aspect-ratio: 16 / 8; cursor: default; }
 .cv-tune { aspect-ratio: 16 / 6.4; cursor: default; }
-@media (max-width: 560px) { .cv-play, .cv-which { aspect-ratio: 4 / 3.6; } .cv-pole, .cv-law, .cv-tune { aspect-ratio: 4 / 3.4; } }
+.cv-any { aspect-ratio: 16 / 6.4; cursor: default; }
+.cv-cup { aspect-ratio: 16 / 5.6; cursor: default; }
+@media (max-width: 560px) { .cv-play, .cv-which { aspect-ratio: 4 / 3.6; } .cv-pole, .cv-law, .cv-tune, .cv-any, .cv-cup { aspect-ratio: 4 / 3.4; } }
 .controls { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; margin-top: 0.75rem; }
 .btn { font-family: var(--f-body); font-size: 0.92rem; font-weight: 500; background: var(--accent); color: var(--accent-ink); border: 1px solid var(--accent); border-radius: var(--radius); padding: 0.42rem 0.85rem; cursor: pointer; user-select: none; -webkit-user-select: none; touch-action: none; }
 .btn-2 { background: var(--surface-2); color: var(--ink); border-color: var(--line); }
@@ -184,7 +186,7 @@ footer { border-top: 1px solid var(--line); padding-block: 2rem 3rem; color: var
     <div class="gutter"><div class="wrap row">
       <span>On this page</span>
       <a href="#play">Play</a><a href="#how">How it works</a><a href="#hearing">Hearing</a><a href="#seeing">Seeing</a>
-      <a href="#law">The law</a><a href="#which">Which glass?</a><a href="#tune">Tune by sight</a><a href="#results">Results</a><a href="#run">Run it</a>
+      <a href="#law">The law</a><a href="#which">Which glass?</a><a href="#tune">Tune by sight</a><a href="#any">Any container</a><a href="#results">Results</a><a href="#run">Run it</a>
     </div></div>
   </nav>
 </header>
@@ -197,9 +199,12 @@ footer { border-top: 1px solid var(--line); padding-block: 2rem 3rem; color: var
     <h1>Seeing the note,<br>hearing the water</h1>
     <p class="lede">A jal tarang is a row of bowls tuned with water. TuneSight watches the bowls with a camera and listens with a microphone.
       The camera reads how much water each bowl holds. The microphone hears the pitch of each strike. A physical law, learned from a few taps,
-      joins the two, so the system can tell which of several identical bowls was struck, tune the bowls to a raga by sight, and write the sargam as you play.</p>
+      joins the two, so the system can tell which of several identical bowls was struck, tune the bowls to a raga by sight, and write the sargam as you play.
+      With the container's shape from the camera, the same law covers glasses it has never tapped, and run backwards it hears the water in a cup it cannot see into.</p>
     <div class="facts">
       <span>Camera-only pitch error after 5 taps: <b>{{EfiveFive}} cents</b></span>
+      <span>Radius from the camera: within <b>{{EeightR}} mm</b></span>
+      <span>A new glass from its shape: <b>{{EnineZero}} → {{EnineTap}} cents</b> (zero taps → one)</span>
       <span>Exponent recovered from data: <b>n = {{EthreeN}}</b> (theory: 4)</span>
       <span>Identical glasses, striker hidden, 10 dB SNR: <b>{{EsixTunedHidden}}%</b> correct</span>
       <span>Tuning error after one tap: <b>{{EsevenIdTap}} cents</b></span>
@@ -212,8 +217,9 @@ footer { border-top: 1px solid var(--line); padding-block: 2rem 3rem; color: var
       <a href="#law"><b>05</b>The law that joins them</a>
       <a href="#which"><b>06</b>Which glass rang?</a>
       <a href="#tune"><b>07</b>Tune by sight</a>
-      <a href="#results"><b>08</b>Results</a>
-      <a href="#run"><b>09</b>Run it yourself</a>
+      <a href="#any"><b>08</b>Any container: shape and opaque cups</a>
+      <a href="#results"><b>09</b>Results</a>
+      <a href="#run"><b>10</b>Run it yourself</a>
     </nav>
   </div>
 
@@ -481,9 +487,67 @@ footer { border-top: 1px solid var(--line); padding-block: 2rem 3rem; color: var
     </figure>
   </section>
 
-  <!-- ===================================================== 08 RESULTS -->
-  <section id="results">
+  <!-- ===================================================== 08 ANY CONTAINER -->
+  <section id="any">
     <span class="secnum">08</span>
+    <h2>Any container: shape and opaque cups</h2>
+    <div class="read">
+      <p>The jal tarang uses identical bowls, but the idea is more general. From the outline the camera also measures each container's
+        <strong>radius</strong> and height (straight walls fitted to the silhouette; the printed marker gives centimetres), and from the radius
+        profile its capacity in millilitres. French's thin-wall model says how the shape sets the two numbers of the law:</p>
+    </div>
+    <div class="eq">
+      <math display="block"><msub><mi>f</mi><mn>0</mn></msub><mo>∝</mo><mfrac><mi>a</mi><msup><mi>R</mi><mn>2</mn></msup></mfrac><mspace width="2em"></mspace><mi>β</mi><mo>∝</mo><mfrac><mi>R</mi><mi>a</mi></mfrac></math>
+    </div>
+    <div class="read">
+      <p>A wider glass sounds lower, and water lowers it more. The camera sees <i>R</i> and <i>H</i>; only the wall thickness <i>a</i> is hidden.
+        Glasses of one family share it, so <strong>two constants</strong> fitted on a few tapped glasses predict a new glass from its shape alone.
+        Run backwards, the law turns a tap into a water level: an <strong>opaque cup</strong> can be heard instead of seen, except near empty,
+        where the law is too flat.</p>
+    </div>
+    <div class="demo" id="demo-any">
+      <div class="demo-head"><span class="tag">Live</span><span class="hint">Design a glass: change its radius, height and wall, then the water. Tap to hear it.</span></div>
+      <canvas id="cv-any" class="cv cv-any" aria-label="A glass drawn to scale on the left; its pitch against water level on the right, with the zone where sound cannot tell the level"></canvas>
+      <div class="controls">
+        <label class="field" for="any-r">Radius <input type="range" id="any-r" min="2.5" max="4.5" step="0.1" value="3.5"><span class="mono" id="any-r-v"></span></label>
+        <label class="field" for="any-h">Height <input type="range" id="any-h" min="7" max="12" step="0.5" value="9"><span class="mono" id="any-h-v"></span></label>
+        <label class="field" for="any-a">Wall <input type="range" id="any-a" min="1" max="2.5" step="0.1" value="1.5"><span class="mono" id="any-a-v"></span></label>
+        <label class="field" for="any-f">Water <input type="range" id="any-f" min="0" max="0.9" step="0.01" value="0.5"><span class="mono" id="any-f-v"></span></label>
+        <button class="btn" id="any-tap" type="button">Tap the glass</button>
+      </div>
+      <div class="readout" id="any-readout" aria-live="polite"></div>
+    </div>
+    <div class="demo" id="demo-cup">
+      <div class="demo-head"><span class="tag">Live</span><span class="hint">An opaque cup with a hidden amount of water. Tap it, read the level from the pitch, then reveal.</span></div>
+      <canvas id="cv-cup" class="cv cv-cup" aria-label="An opaque cup; after a tap, the water level estimated from the pitch, and the true level when revealed"></canvas>
+      <div class="controls">
+        <button class="btn" id="cup-tap" type="button">Tap the cup</button>
+        <button class="btn btn-2" id="cup-reveal" type="button">Reveal the water</button>
+        <button class="btn btn-2" id="cup-new" type="button">New hidden level</button>
+      </div>
+      <div class="readout" id="cup-readout" aria-live="polite"></div>
+    </div>
+    <figure class="video">
+      <video src="media/AnyContainer.mp4" poster="media/AnyContainer.jpg" controls muted playsinline preload="metadata"></video>
+      <figcaption><b>Animation (ManimGL).</b> Wider glasses sound lower (f₀ ∝ 1/R²); an opaque cup's level is read from its pitch.</figcaption>
+    </figure>
+    <div class="figgrid">
+      <figure class="fig">
+        <img src="assets/figures/fig_shape.png" alt="One glass with its measured walls, rim and base radius, height, capacity and water volume" loading="lazy">
+        <figcaption><b>What the camera measures.</b> Radius within <b>{{EeightR}} mm</b> ({{EeightRfar}} mm with the camera farther away),
+          capacity within {{EeightCap}}%.</figcaption>
+      </figure>
+      <figure class="fig">
+        <img src="assets/figures/fig_family.png" alt="Empty pitch against radius with the 1/R squared law, and pitch curves of new glasses predicted from their shape" loading="lazy">
+        <figcaption><b>One law, any glass.</b> The fitted radius exponent is {{EnineExp}} (French: −2); new glasses follow the curves
+          predicted from their shape alone.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- ===================================================== 09 RESULTS -->
+  <section id="results">
+    <span class="secnum">09</span>
     <h2>Results</h2>
     <div class="read">
       <p>All experiments are produced by one script, <code>scripts/evaluate.py</code>, and every figure says whether its data are simulated
@@ -509,6 +573,18 @@ footer { border-top: 1px solid var(--line); padding-block: 2rem 3rem; color: var
       <img src="assets/figures/fig_law.png" alt="Pitch against fill ratio with the learned law, and the same data on straight-line axes" loading="lazy">
       <figcaption><b>The learned law.</b> Bayesian evidence selects n = {{EthreeN}} and base offset r₀ = {{EthreeRzero}}; theory says n = 4.</figcaption>
     </figure>
+    <div class="figgrid">
+      <figure class="fig">
+        <img src="assets/figures/fig_newcontainer.png" alt="Pitch error for a new glass: shape ignored, shape with zero taps, shape plus one tap, for three wall-thickness spreads" loading="lazy">
+        <figcaption><b>A new glass.</b> Ignoring its shape: {{EnineAvg}} cents off. Its shape alone: <b>{{EnineZero}} cents</b> (3% wall spread;
+          {{EnineZeroSame}} with equal walls). One check tap: <b>{{EnineTap}} cents</b>. The hidden wall thickness sets the limit.</figcaption>
+      </figure>
+      <figure class="fig">
+        <img src="assets/figures/fig_hearlevel.png" alt="Water level heard from the pitch against the true level, with the dead zone near empty" loading="lazy">
+        <figcaption><b>An opaque cup.</b> Level from the pitch within <b>{{EtenAbove}}%</b> of the height above 35% full; below 30% the law is
+          too flat ({{EtenBelow}}% error), because a tap varies more than a little water changes the pitch.</figcaption>
+      </figure>
+    </div>
     <h3>What is new here</h3>
     <div class="table-wrap">
       <table class="plain">
@@ -532,7 +608,8 @@ footer { border-top: 1px solid var(--line); padding-block: 2rem 3rem; color: var
           <tr><td>Linear prediction, AR models, source–filter model</td><td>Covariance-method LPC: poles give frequency and damping; resynthesis</td></tr>
           <tr><td>Thresholding, morphology, binary images, contours</td><td>Bowl silhouettes, hole filling, connected regions</td></tr>
           <tr><td>Colour spaces, intensity profiles</td><td>Water line from HSV saturation; brightness step for clear water</td></tr>
-          <tr><td>Regression, vector spaces, projections</td><td>Bayesian linear regression of 1/f² on uⁿ; model evidence</td></tr>
+          <tr><td>Camera geometry, fiducial markers, solids of revolution</td><td>Radius, height and capacity of each container in cm and ml</td></tr>
+          <tr><td>Regression, vector spaces, projections</td><td>Bayesian linear regression of 1/f² on uⁿ; model evidence; the family's shape constants</td></tr>
           <tr><td>Multisensory integration, inverse effectiveness</td><td>Reliability-weighted fusion of audio and motion cues</td></tr>
         </tbody>
       </table>
@@ -541,7 +618,7 @@ footer { border-top: 1px solid var(--line); padding-block: 2rem 3rem; color: var
 
   <!-- ===================================================== 09 RUN -->
   <section id="run">
-    <span class="secnum">09</span>
+    <span class="secnum">10</span>
     <h2>Run it yourself</h2>
     <div class="read">
       <p>The live demo is a desktop app: video on the left with every bowl, water line and target; spectrum, LPC poles, the learned law and the cue bars on the right.
@@ -1113,6 +1190,138 @@ python scripts/build_web.py              # this page -> web/index.html</code></p
     noteEl.addEventListener('change', function () { newGlass(); draw(); });
     newGlass();
     redrawers.push(draw);
+  })();
+
+  /* ---------------------------------------------------------------- 08 any container: shape -> law, and an opaque cup */
+  var E_GLASS = 70e9, RHO_G = 2500, RHO_W = 1000, ALPHA_L = 1.6, TAP_CENTS = 8;
+  function shapeF0(Rcm, Hcm, amm) {          // French's thin glass shell: empty pitch from radius, height, wall
+    var R = Rcm / 100, H = Hcm / 100, a = amm / 1000;
+    return Math.sqrt((3 * E_GLASS / (5 * RHO_G)) * a * a / Math.pow(R, 4) * (1 + 4 / 3 * Math.pow(R / H, 4))) / (2 * Math.PI);
+  }
+  function shapeBeta(Rcm, amm) { return ALPHA_L * RHO_W * (Rcm / 100) / (5 * RHO_G * amm / 1000); }
+  function lawF(f0, beta, r) { return f0 / Math.sqrt(1 + beta * Math.pow(clamp(r, 0, 1.2), NEXP)); }
+  function lawInv(f, f0, beta) { if (f >= f0) return 0; return Math.pow(Math.max((Math.pow(f0 / f, 2) - 1) / beta, 0), 1 / NEXP); }
+  function levelRes(beta, r) {                 // how precisely one tap (±8 cents) pins the level, as a fraction of the height
+    var lo = Math.max(r - 0.005, 0), d = Math.abs(cents(lawF(1, beta, r + 0.005), lawF(1, beta, lo))) / (r + 0.005 - lo);
+    return TAP_CENTS / Math.max(d, 1e-9);
+  }
+  function deadEdge(beta) { for (var r = 0; r < 0.9; r += 0.005) { if (levelRes(beta, r) < 0.10) return r; } return 0.9; }
+  function lawPlot(ctx, x0, x1, y0, y1, fmin, fmax, logY) {
+    function X(r) { return x0 + (x1 - x0) * r / 0.95; }
+    function Y(f) { return logY ? y1 - (y1 - y0) * (Math.log(f) - Math.log(fmin)) / (Math.log(fmax) - Math.log(fmin)) : y1 - (y1 - y0) * (f - fmin) / (fmax - fmin); }
+    ctx.strokeStyle = css('--line'); ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(x0, y0); ctx.lineTo(x0, y1); ctx.lineTo(x1, y1); ctx.stroke();
+    [0, 0.25, 0.5, 0.75].forEach(function (r) { axisLabel(ctx, (r * 100).toFixed(0) + '%', X(r), y1 + 14, 'center'); });
+    axisLabel(ctx, 'water level h/H', x1, y1 - 6, 'right');
+    return { X: X, Y: Y };
+  }
+  function deadZone(ctx, P, beta, y0, y1) {
+    var e = deadEdge(beta);
+    ctx.fillStyle = css('--bad'); ctx.globalAlpha = 0.10; ctx.fillRect(P.X(0), y0, P.X(e) - P.X(0), y1 - y0); ctx.globalAlpha = 1;
+    axisLabel(ctx, "sound can't tell", (P.X(0) + P.X(e)) / 2, y1 - 8, 'center', css('--bad'));
+    return e;
+  }
+  function curve(ctx, P, f0, beta, color) {
+    ctx.strokeStyle = color; ctx.lineWidth = 2; ctx.beginPath();
+    for (var i = 0; i <= 95; i++) { var r = i / 100, y = P.Y(lawF(f0, beta, r)); if (i === 0) ctx.moveTo(P.X(r), y); else ctx.lineTo(P.X(r), y); }
+    ctx.stroke();
+  }
+
+  (function () {                                  // design a glass
+    var cv = document.getElementById('cv-any'), out = document.getElementById('any-readout'), el = {};
+    ['r', 'h', 'a', 'f'].forEach(function (k) { el[k] = document.getElementById('any-' + k); });
+    function v(k) { return parseFloat(el[k].value); }
+    function state() {
+      var s = { R: v('r'), H: v('h'), a: v('a'), fill: v('f') };
+      s.f0 = shapeF0(s.R, s.H, s.a); s.beta = shapeBeta(s.R, s.a); s.pitch = lawF(s.f0, s.beta, s.fill);
+      return s;
+    }
+    function draw() {
+      var s = state(), F = fit(cv), ctx = F.ctx, w = F.w, h = F.h;
+      document.getElementById('any-r-v').textContent = s.R.toFixed(1) + ' cm';
+      document.getElementById('any-h-v').textContent = s.H.toFixed(1) + ' cm';
+      document.getElementById('any-a-v').textContent = s.a.toFixed(1) + ' mm';
+      document.getElementById('any-f-v').textContent = (100 * s.fill).toFixed(0) + '%';
+      var lw = w * 0.30, sc = Math.min((lw - 24) / (2 * 2 * 4.5 / 1.8), (h - 50) / 12.2);
+      var W = 2 * (2 * s.R / 1.8) * sc, Hp = s.H * sc, cx = lw / 2, base = h - 26;
+      drawGlass(ctx, cx, base, W, Hp, s.fill);
+      axisLabel(ctx, 'R ' + s.R.toFixed(1) + ' cm · H ' + s.H.toFixed(1) + ' cm', cx, base + 17, 'center');
+      axisLabel(ctx, s.pitch.toFixed(0) + ' Hz', cx, base - Hp - 10, 'center', css('--water'), 15);
+      var x0 = lw + 52, x1 = w - 14, y0 = 16, y1 = h - 30, P = lawPlot(ctx, x0, x1, y0, y1, 300, 1900, true);
+      [400, 700, 1000, 1500].forEach(function (f) { axisLabel(ctx, String(f), x0 - 6, P.Y(f) + 4, 'right'); });
+      axisLabel(ctx, 'pitch (Hz)', x0 + 6, y0 + 26, 'left');
+      deadZone(ctx, P, s.beta, y0, y1);
+      curve(ctx, P, s.f0, s.beta, css('--accent'));
+      ctx.fillStyle = css('--water'); ctx.beginPath(); ctx.arc(P.X(s.fill), P.Y(s.pitch), 5, 0, 2 * Math.PI); ctx.fill();
+      var res = levelRes(s.beta, s.fill);
+      out.innerHTML = 'Empty pitch <b>' + s.f0.toFixed(0) + ' Hz</b> (f₀ ∝ a/R²); water effect β = ' + s.beta.toFixed(2) + ' (∝ R/a). ' +
+        'With water at ' + (100 * s.fill).toFixed(0) + '%: <b>' + s.pitch.toFixed(0) + ' Hz</b>. ' +
+        (res < 0.10 ? 'Here one tap tells the level to ±' + (100 * res).toFixed(1) + '% of the height.'
+                    : '<span class="status-bad">Here the law is too flat</span>: a tap varies more than the water changes the pitch.');
+    }
+    ['r', 'h', 'a', 'f'].forEach(function (k) { el[k].addEventListener('input', draw); });
+    document.getElementById('any-tap').addEventListener('click', function () { var s = state(); playModes(glassModes(s.pitch, s.fill)); });
+    redrawers.push(draw);
+    draw();
+  })();
+
+  (function () {                                  // an opaque cup: hear the water
+    var cv = document.getElementById('cv-cup'), out = document.getElementById('cup-readout');
+    var R = 3.5, H = 9, A = 1.5, f0 = shapeF0(R, H, A), beta = shapeBeta(R, A), st = {};
+    function jitter(f) { return f * Math.pow(2, gauss() * TAP_CENTS / 1200); }
+    function newLevel() {
+      st = { level: 0.05 + 0.85 * Math.random(), fEmpty: jitter(f0), heard: null, est: null, shown: false };
+      out.innerHTML = 'A new hidden level. When empty, this cup rang at <b>' + st.fEmpty.toFixed(0) + ' Hz</b>; its shape gives β = ' +
+        beta.toFixed(2) + '. Tap it.';
+    }
+    function draw() {
+      var F = fit(cv), ctx = F.ctx, w = F.w, h = F.h;
+      var lw = w * 0.30, cx = lw / 2, base = h - 26, Hp = h - 60, W = Hp * 0.62;
+      drawGlass(ctx, cx, base, W, Hp, st.shown ? st.level : 0);
+      if (!st.shown) {
+        glassPath(ctx, cx, base, W, Hp); ctx.fillStyle = css('--surface-2'); ctx.fill();
+        ctx.lineWidth = 2.2; ctx.strokeStyle = css('--glass'); ctx.stroke();
+        axisLabel(ctx, '?', cx, base - Hp / 2 + 9, 'center', css('--muted'), 28);
+      }
+      if (st.est !== null) {
+        var ye = base - Math.min(st.est, 1) * Hp;
+        ctx.setLineDash([6, 4]); ctx.strokeStyle = css('--accent'); ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.moveTo(cx - W * 0.56, ye); ctx.lineTo(cx + W * 0.56, ye); ctx.stroke(); ctx.setLineDash([]);
+        axisLabel(ctx, 'heard ' + (100 * st.est).toFixed(0) + '%', cx + W * 0.6, ye + 4, 'left', css('--accent'));
+      }
+      var fmin = Math.floor(lawF(f0, beta, 0.95) / 50) * 50 - 50, fmax = f0 * 1.05;
+      var x0 = lw + 52, x1 = w - 14, y0 = 16, y1 = h - 30, P = lawPlot(ctx, x0, x1, y0, y1, fmin, fmax, false);
+      [fmin + 50, Math.round((fmin + fmax) / 200) * 100, Math.round(f0 / 50) * 50].forEach(function (f) { axisLabel(ctx, String(f), x0 - 6, P.Y(f) + 4, 'right'); });
+      axisLabel(ctx, 'pitch (Hz)', x0 + 6, y0 + 26, 'left');
+      deadZone(ctx, P, beta, y0, y1);
+      curve(ctx, P, st.fEmpty, beta, css('--accent'));
+      if (st.heard !== null) {
+        var xe = P.X(Math.min(st.est, 0.95)), yh = P.Y(st.heard);
+        ctx.setLineDash([5, 4]); ctx.strokeStyle = css('--muted'); ctx.lineWidth = 1.2;
+        ctx.beginPath(); ctx.moveTo(x0, yh); ctx.lineTo(xe, yh); ctx.lineTo(xe, y1); ctx.stroke(); ctx.setLineDash([]);
+        axisLabel(ctx, 'heard ' + st.heard.toFixed(0) + ' Hz', x0 + 6, yh - 6, 'left', css('--ink'));
+      }
+      if (st.shown) {
+        ctx.strokeStyle = css('--water'); ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(P.X(st.level), y0 + 18); ctx.lineTo(P.X(st.level), y1); ctx.stroke();
+        axisLabel(ctx, 'true', P.X(st.level) + 4, y0 + 30, 'left', css('--water'));
+      }
+    }
+    document.getElementById('cup-tap').addEventListener('click', function () {
+      st.heard = jitter(lawF(f0, beta, st.level));
+      st.est = lawInv(st.heard, st.fEmpty, beta);
+      playModes(glassModes(st.heard, st.level));
+      out.innerHTML = 'It rings at <b>' + st.heard.toFixed(1) + ' Hz</b>. Run backwards, the law says the water is at <b>' +
+        (100 * st.est).toFixed(0) + '%</b> of the height.' + (st.est < deadEdge(beta) ? ' This is in the flat zone, so the guess is unreliable.' : '');
+      draw();
+    });
+    document.getElementById('cup-reveal').addEventListener('click', function () {
+      st.shown = true;
+      out.innerHTML += ' True level: <b>' + (100 * st.level).toFixed(0) + '%</b>' + (st.est !== null ? ' (error ' + (100 * Math.abs(st.est - st.level)).toFixed(1) + '% of the height).' : '.');
+      draw();
+    });
+    document.getElementById('cup-new').addEventListener('click', function () { newLevel(); draw(); });
+    newLevel();
+    redrawers.push(draw);
+    draw();
   })();
 
   applyTheme(savedTheme);

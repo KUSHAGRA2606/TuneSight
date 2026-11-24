@@ -9,7 +9,11 @@ f = f₀ / √(1 + β uⁿ) (A. P. French, 1983), is **learned live from a few t
 
 - tell **which of several identical bowls was struck**, even though they all look the same;
 - **tune the bowls to a raga by sight** ("pour 66 ml… STOP, tap… top up");
-- **write the sargam** while someone plays.
+- **write the sargam** while someone plays;
+- measure each **container's shape** (radius, height, capacity) and predict the pitch of a **new glass from its shape alone**;
+- **hear the water level of an opaque cup** that the camera cannot see into.
+
+**Live explainer:** <https://kushagra2606.github.io/TuneSight/> (GitHub Pages)
 
 ![The desktop app in tune-by-sight mode](web/assets/figures/app_screenshot.png)
 
@@ -18,9 +22,9 @@ f = f₀ / √(1 + β uⁿ) (A. P. French, 1983), is **learned live from a few t
 | Deliverable | Where | Open it |
 |---|---|---|
 | 1. Code repository | this folder | `python -m pytest -q`, then any command below |
-| 2. Interactive demo: explainer page with ManimGL animations, architecture diagram and five live in-browser demos | `web/index.html` | open in a browser (works offline; fonts need internet) |
+| 2. Interactive demo: explainer page with six ManimGL animations, architecture diagram and seven live in-browser demos | `web/index.html`, live at <https://kushagra2606.github.io/TuneSight/> | open in a browser (works offline; fonts need internet) |
 | 2b. Live demo: desktop app with webcam + microphone | `app/app.py` | `python app/app.py` (or `--sim` without hardware) |
-| 3. Slides: IITG Beamer template, 22 slides in the course's suggested order (motivation, history, key highlights, what I learned, reflections, references) | `slides/TuneSight_slides.pdf` | `python scripts/build_slides.py` rebuilds it |
+| 3. Slides: IITG Beamer template, 18 slides in the course's suggested order (motivation, history, key highlights, what I learned, reflections, references) | `slides/TuneSight_slides.pdf` | `python scripts/build_slides.py` rebuilds it |
 | Results, all experiments | `results/RESULTS.md`, `results/metrics.json`, `results/figures/` | `python scripts/evaluate.py` |
 | Design, novelty, model | `docs/DESIGN.md` | |
 | Presenter's demo script | `docs/DEMO_SCRIPT.md` | |
@@ -38,7 +42,10 @@ Simulated experiments use a physics-based simulator with known ground truth; eve
 | Which of 5 identical glasses was struck (raga-tuned set, striker hidden) | **100 %** at 20 dB SNR, 96 % at 10 dB (audio through physics) |
 | Same, at 0 dB SNR with the striker visible | fused **100 %** against 22 % for audio alone |
 | Tune by sight, raga Bhupali (one verification tap) | mean error 12.7 → **8.4 cents** (near-identical glasses); 68.2 → **12.9 cents** when glasses differ by 3 % |
-| Real recordings | ObjectFolder Real glass #91: modes found, resynthesis, LPC poles (`results/figures/e1_real_strike_91.png`) |
+| Container shape from the camera (random glasses, radius 2.5-4.5 cm) | radius within **0.16 mm** (0.9 mm with the camera farther away), capacity within 4 % |
+| A **new** glass's pitch from its shape (3 % wall-thickness spread) | shape ignored 375 cents; shape alone **45 cents**; one check tap **7 cents**; fitted radius exponent −2.01 (French: −2) |
+| Water level of an **opaque** cup, heard (±8 cents tap variation) | within **1.2 %** of the height above 35 % full; 14 % below 30 %, where the law is too flat |
+| Real recordings | ObjectFolder Real glass #91: both strikes agree on the lowest mode (225 / 224 Hz); modes, resynthesis, LPC poles |
 | Live app, scripted end-to-end self-test | 8 of 8 strikes identified in every run; after one correction tap the tuned bowl ends 20-25 cents from its note |
 
 ## Quick start
@@ -54,7 +61,7 @@ uv pip install --python .venv -r requirements.txt
 # below, "python" means .venv\Scripts\python.exe (Windows) or .venv/bin/python
 
 # 2. check that everything works
-python -m pytest -q                 # 16 automated checks
+python -m pytest -q                 # 19 automated checks
 
 # 3. try it
 python app/app.py --sim             # live demo with simulated glasses (keys 1-5 strike; pour/drain buttons)
@@ -105,20 +112,23 @@ python app/app.py                                  # loads the calibration
   picks n and the base offset. One verification tap measures a bowl's pitch offset during tuning.
 - **Fusion:** reliability-weighted log-linear pooling of the audio likelihood (heard pitch against each bowl's camera-predicted pitch)
   and the motion likelihood (striker tip), plus a "none of the visible bowls" hypothesis.
+- **Any container (`tunesight/geometry.py`):** walls fitted to the outline give radius, height and capacity. French's thin-wall model
+  says the empty pitch scales as a/R² and the water effect as R/a (a = wall thickness, hidden from the camera), so two constants shared
+  by a family of glasses predict a new glass from its shape alone. Run backwards, the law turns a tap into the water level of an opaque cup.
 
 Full details, novelty against published work, and limitations: [`docs/DESIGN.md`](docs/DESIGN.md).
 
 ## Repository layout
 
 ```
-tunesight/        the library: audio, vision, physics, fusion, tuning, music, simulate, session, objectfolder, config
+tunesight/        the library: audio, vision, geometry, physics, fusion, tuning, music, simulate, session, objectfolder, config
 app/app.py        live desktop demo (PySide6 + pyqtgraph + OpenCV + sounddevice); --sim, --selftest
 scripts/          evaluate, make_figures, build_slides, build_web, record_session, calibrate, download_objectfolder, make_marker
 animations/       ManimGL scenes (scenes.py) and renderer (render.py)
 web/              interactive explainer: src/index.template.html -> index.html, media/ (videos), assets/figures/
 slides/           IITG Beamer deck: main.tex, segments/, ref.bib, images/, generated/numbers.tex
 results/          RESULTS.md, metrics.json, figures/ (experiment figures; figures/slides/ vector PDFs)
-tests/            pytest suite (16 checks)
+tests/            pytest suite (19 checks)
 docs/             DESIGN.md (idea, novelty, model), DEMO_SCRIPT.md (live demo)
 data/             downloads and recorded sessions (not committed; see data/README.md)
 ```

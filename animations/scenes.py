@@ -368,3 +368,61 @@ class Pipeline(Base):
         for a in (a1, a3, a5, a8):
             self.play(ShowPassingFlash(a.copy().set_color(ACCENT).set_stroke(width=8), time_width=0.6), run_time=0.5)
         self.wait(2.5)
+
+
+# ================================================================== 5. any container: the shape sets the pitch
+def f0_from_shape(R_cm, H_cm=9.0, a_mm=1.5):
+    """French's thin-wall glass: empty pitch from mean radius R, height H and wall thickness a."""
+    R, H, a = R_cm / 100, H_cm / 100, a_mm / 1000
+    return float(np.sqrt((3 * 70e9 / (5 * 2500)) * a * a / R ** 4 * (1 + (4 / 3) * (R / H) ** 4)) / (2 * np.pi))
+
+
+class AnyContainer(Base):
+    def construct(self):
+        self.title("5. Any container: the camera measures the shape, physics gives the pitch")
+        radii = [2.6, 3.5, 4.4]
+        xs = [-5.6, -3.75, -1.5]                       # centres spaced by the glasses' own widths
+        gls = VGroup(*[glass(width=0.5 * R, height=2.3).move_to(RIGHT * x + DOWN * 2.2, aligned_edge=DOWN)
+                       for x, R in zip(xs, radii)])
+        self.play(LaggedStart(*[FadeIn(g) for g in gls], lag_ratio=0.25))
+        arrows = VGroup(*[Arrow(g.get_top(), g.get_top() + RIGHT * 0.25 * R, buff=0, stroke_width=4, color=RED_B)
+                          for g, R in zip(gls, radii)])
+        rl = VGroup(*[T(f"R = {R} cm", 20, RED_B).next_to(g, DOWN, buff=0.2) for g, R in zip(gls, radii)])
+        cam = T("camera: radius from the outline (ArUco gives cm)", 22, BLUE_B).move_to(LEFT * 3.3 + UP * 2.3)
+        self.play(LaggedStart(*[GrowArrow(a) for a in arrows], lag_ratio=0.2), FadeIn(rl), FadeIn(cam))
+        fl = VGroup(*[T(f"{f0_from_shape(R):.0f} Hz", 24, ACCENT).next_to(g, UP, buff=0.45) for g, R in zip(gls, radii)])
+        self.play(LaggedStart(*[FadeIn(f, shift=UP * 0.2) for f in fl], lag_ratio=0.25))
+
+        ax = axes((0, 2.2, 0.5), (0, 12, 2), 4.6, 3.4).move_to(RIGHT * 3.6 + DOWN * 0.45)
+        xv, yv = (lambda r: r - 2.4), (lambda f: (f - 400.0) / 100.0)      # shifted units: R from 2.4 cm, f from 400 Hz
+        ticks = VGroup(*[T(f"{r:.1f}", 16, MUTED).next_to(ax.c2p(xv(r), 0), DOWN, buff=0.12) for r in (2.5, 3.5, 4.5)],
+                       *[T(str(f), 16, MUTED).next_to(ax.c2p(0, yv(f)), LEFT, buff=0.12) for f in (500, 1000, 1500)])
+        xl = T("mean radius R (cm)", 18, MUTED).next_to(ax, DOWN, buff=0.45)
+        yl = T("empty pitch (Hz)", 18, MUTED).rotate(PI / 2).next_to(ax, LEFT, buff=0.6)
+        curve = ax.get_graph(lambda x: yv(f0_from_shape(x + 2.4)), x_range=(0.1, 2.15, 0.02), color=ACCENT)
+        law = T("f0  ~  a / R^2     (wall thickness a, same glass)", 22, ACCENT).next_to(ax, UP, buff=0.3)
+        self.play(ShowCreation(ax), FadeIn(ticks), FadeIn(xl), FadeIn(yl), FadeIn(law))
+        pts = VGroup(*[Dot(ax.c2p(xv(R), yv(f0_from_shape(R))), color=RED_B, radius=0.09) for R in radii])
+        self.play(ShowCreation(curve), LaggedStart(*[GrowFromCenter(p) for p in pts], lag_ratio=0.3), run_time=2)
+        note = T("a few calibrated glasses fix the family's constants; a new glass needs no taps", 22, GREEN_B).to_edge(DOWN, buff=0.2)
+        self.play(FadeIn(note))
+        self.wait(1.5)
+        self.clear_all()
+
+        # an opaque cup: the camera sees the outline, not the water; the pitch tells the level
+        self.title("Opaque cup: hear the water instead of seeing it")
+        fill = 0.62
+        cup = glass(1.8, 2.7, fill).move_to(LEFT * 3.2 + DOWN * 2.4, aligned_edge=DOWN)
+        cover = cup[-1].copy().set_fill("#34465C", 1.0).set_stroke(GLASS, 3)
+        q = T("?", 60, MUTED).move_to(cover)
+        self.play(FadeIn(cup), FadeIn(cover), FadeIn(q))
+        self.play(Flash(cover.get_corner(UR), color=ACCENT, flash_radius=0.5), run_time=0.6)
+        heard = T(f"heard: {french(fill):.0f} Hz", 30, ACCENT).move_to(RIGHT * 2.6 + UP * 1.2)
+        inv = T("empty tap gave 1100 Hz;  law run backwards:", 22, MUTED).next_to(heard, DOWN, buff=0.35)
+        lev = T(f"water level = {100 * fill:.0f} % of the height", 30, GREEN_B).next_to(inv, DOWN, buff=0.35)
+        self.play(FadeIn(heard))
+        self.play(FadeIn(inv), FadeIn(lev, shift=DOWN * 0.2))
+        self.play(cover.animate.set_fill(opacity=0.0), FadeOut(q), run_time=1.2)
+        warn = T("near empty the law is flat (h^4 is tiny): below ~30 % the pitch cannot tell", 22, RED_B).to_edge(DOWN, buff=0.2)
+        self.play(FadeIn(warn))
+        self.wait(2.5)

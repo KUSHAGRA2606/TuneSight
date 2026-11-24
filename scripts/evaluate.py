@@ -25,6 +25,7 @@ from scipy import signal  # noqa: E402
 from tunesight import audio as A  # noqa: E402
 from tunesight import config as C  # noqa: E402
 from tunesight import fusion as F  # noqa: E402
+from tunesight import geometry as G  # noqa: E402
 from tunesight import objectfolder as OF  # noqa: E402
 from tunesight import physics as P  # noqa: E402
 from tunesight import session as S  # noqa: E402
@@ -476,6 +477,134 @@ def e7_study(seeds=(0, 1, 2), spreads=((0.004, "near-identical bowls (0.4% sprea
     return out, save(fig, "e7_tuning_sim.png")
 
 
+# ============================================================================ E8-E10 beyond identical glasses
+def random_container(rng, x_cm=12.0, a_mm=1.5, thick_spread=0.0):
+    """A glass of random size and taper; its pitch follows French's thin-wall physics (see geometry.py)."""
+    R_mean, H, taper = rng.uniform(2.5, 4.5), rng.uniform(7.0, 12.0), rng.uniform(0.70, 0.95)
+    a = a_mm * (1 + thick_spread * rng.standard_normal())
+    return SIM.family_bowl(x_cm, R_mean, H, taper, a)
+
+
+def sim_tap_shape(bowl, fill, rng, snr=40):
+    """One tap: the camera's fill ratio and container shape, and the microphone's pitch."""
+    obs = V.measure_frame(SIM.render_scene([bowl], [fill], seed=int(rng.integers(1e9))))
+    o = obs.bowls[0] if obs.bowls else None
+    an = A.analyze_strike(SIM.synth_strike(bowl, fill, snr_db=snr, seed=int(rng.integers(1e9))))
+    return (o.fill_ratio if o else np.nan), G.shape_from_obs(o), (an.pitch if an else np.nan)
+
+
+def e8_shape(rng, n=30):
+    """Container shape from the camera (radius, height, capacity) against the simulator's truth."""
+    out = {}
+    for ppc, blur in ((18.0, 0.0), (12.0, 0.0), (18.0, 2.0)):
+        er, et, eh, ec, found = [], [], [], [], 0
+        for _ in range(n):
+            b = random_container(rng)
+            img = SIM.render_scene([b], [rng.uniform(0.2, 0.8)], ppc=ppc, blur=blur, seed=int(rng.integers(1e9)))
+            obs = V.measure_frame(img)
+            s = G.shape_from_obs(obs.bowls[0]) if obs.bowls else None
+            if s is None:
+                continue
+            found += 1
+            er.append(10 * (s.R_mean_cm - (b.D_top_cm + b.D_bot_cm) / 4))
+            et.append(10 * (s.R_top_cm - b.D_top_cm / 2))
+            eh.append(10 * (s.H_cm - b.H_cm))
+            ec.append(100 * (s.capacity_ml / G.frustum_capacity_ml(b.D_top_cm / 2, b.D_bot_cm / 2, b.H_cm) - 1))
+        key = f"{ppc:.0f} px/cm" + (f", blur {blur:.0f} px" if blur else "")
+        out[key] = {"found_%": 100.0 * found / n,
+                    "mean_radius_mae_mm": float(np.median(np.abs(er))), "rim_radius_mae_mm": float(np.median(np.abs(et))),
+                    "height_mae_mm": float(np.median(np.abs(eh))), "capacity_mape_%": float(np.median(np.abs(ec)))}
+    return out
+
+
+def _family_data(rng, n, thick_spread, calib_fills=(0.15, 0.35, 0.55, 0.7, 0.85), test_fills=(0.2, 0.4, 0.6, 0.8)):
+    """n containers of one family (same glass, wall thickness spread). For each: its shape from the camera,
+    a 5-tap calibration (French's law with n = 4 and the base offset fixed), and held-out test taps."""
+    data = []
+    for _ in range(n):
+        b = random_container(rng, thick_spread=thick_spread)
+        taps = [sim_tap_shape(b, lv, rng) for lv in calib_fills]
+        shapes = [s for _, s, _ in taps if s is not None]
+        shape = G.Shape(*(float(np.median([getattr(s, k) for s in shapes]))
+                          for k in ("H_cm", "R_top_cm", "R_bot_cm", "capacity_ml")))
+        cal = P.FrenchCalibrator(n=C.FRENCH_N, r0=G.R0_FAMILY, learn_shape=False,
+                                 f0_prior=float(np.nanmax([p for _, _, p in taps])), f0_prior_cents=300)
+        for vf, _, p in taps:
+            if np.isfinite(vf) and np.isfinite(p):
+                cal.add(vf, p)
+        tests = [(vf, p) for vf, _, p in (sim_tap_shape(b, lv, rng) for lv in test_fills) if np.isfinite(vf) and np.isfinite(p)]
+        data.append({"bowl": b, "shape": shape, "f0": cal.f0, "beta": cal.beta, "tests": tests})
+    return data
+
+
+def _loo_law(data, k):
+    train = [d for j, d in enumerate(data) if j != k]
+    return G.FamilyLaw.fit([d["shape"] for d in train], [d["f0"] for d in train], [d["beta"] for d in train]), train
+
+
+def e9_new_container(rng, spreads=(0.0, 0.03, 0.10), n=8, reps=2):
+    """Predict a NEW container's pitch from its shape alone: leave one container out, fit the family's two
+    constants on the others, then score the held-out container's test taps."""
+    methods = ("family average, shape ignored", "shape, zero taps", "shape + 1 check tap")
+    out, example = {}, None
+    for spread in spreads:
+        errs = {m: [] for m in methods}
+        for rep in range(reps):
+            data = _family_data(rng, n, spread)
+            for k, d in enumerate(data):
+                law, train = _loo_law(data, k)
+                f0_avg = float(np.exp(np.mean(np.log([t["f0"] for t in train]))))
+                b_avg = float(np.exp(np.mean(np.log([t["beta"] for t in train]))))
+                for vf, p in d["tests"]:
+                    u = np.clip((vf - law.r0) / (1 - law.r0), 0, 1.2)
+                    errs[methods[0]].append(cents_err(p, f0_avg / np.sqrt(1 + b_avg * u ** law.n)))
+                    errs[methods[1]].append(cents_err(p, law.pitch(d["shape"], vf)))
+                vf0, p0 = d["tests"][0]                      # one check tap sets this container's offset
+                off = cents_err(p0, law.pitch(d["shape"], vf0))
+                errs[methods[2]] += [cents_err(p, law.pitch(d["shape"], vf, off)) for vf, p in d["tests"][1:]]
+            if example is None and spread == 0.03:
+                full = G.FamilyLaw.fit([d["shape"] for d in data], [d["f0"] for d in data], [d["beta"] for d in data])
+                example = {"C_f": full.C_f, "C_b": full.C_b,
+                           "radius_exponent": G.radius_exponent([d["shape"] for d in data], [d["f0"] for d in data]),
+                           "containers": [{**d["shape"].to_dict(), "f0": d["f0"], "beta": d["beta"],
+                                           "true_f0": d["bowl"].f0, "loo": list(_loo_law(data, k)[0].predict(d["shape"])),
+                                           "tests": [list(t) for t in d["tests"]]} for k, d in enumerate(data)]}
+        out[f"{100 * spread:.0f}% wall-thickness spread"] = {m: float(np.median(np.abs(v))) for m, v in errs.items()}
+    return out, example
+
+
+def e10_level_from_sound(rng, n=6, thick_spread=0.03, fills=tuple(np.round(np.linspace(0.0, 0.9, 19), 3))):
+    """An opaque container: the camera sees its outline but not the water. One tap on the EMPTY container
+    gives f0; the family law gives beta from the shape; every later tap's pitch then gives the water level.
+
+    Simulated strikes are cleaner than real ones, so each tap's pitch gets a random jitter of
+    C.PITCH_NOISE_CENTS (8 cents), the spread of two real strikes on one glass (E1, ObjectFolder #91).
+    """
+    data = _family_data(rng, n, thick_spread)
+
+    def heard(b, fill):
+        an = A.analyze_strike(SIM.synth_strike(b, fill, snr_db=40, seed=int(rng.integers(1e9))))
+        return an.pitch * 2 ** (rng.normal(0, C.PITCH_NOISE_CENTS) / 1200) if an else np.nan
+
+    pts = []
+    for k, d in enumerate(data):
+        law, _ = _loo_law(data, k)
+        _, beta = law.predict(d["shape"])
+        b = d["bowl"]
+        f_empty = heard(b, 0.0)
+        for lv in fills:
+            p = heard(b, float(lv))
+            if not (np.isfinite(p) and np.isfinite(f_empty)):
+                continue
+            pts.append([float(SIM.visible_fill(b, float(lv))), G.fill_from_pitch(p, f_empty, beta, law.n, law.r0), float(beta)])
+    p = np.array(pts)
+    err = np.abs(p[:, 1] - p[:, 0])
+    hi, lo = p[:, 0] >= 0.35, p[:, 0] < 0.3
+    return {"fill_mae_above_35%": float(np.median(err[hi])), "fill_mae_below_30%": float(np.median(err[lo])),
+            "fill_p90_above_35%": float(np.percentile(err[hi], 90)), "beta_median": float(np.median(p[:, 2])),
+            "points": p[:, :2].round(4).tolist()}
+
+
 # ============================================================================ main
 def main():
     ap = argparse.ArgumentParser()
@@ -590,6 +719,34 @@ def main():
            "| note | target (Hz) | vision only (cents) | vision + 1 tap (cents) |", "|---|---|---|---|"]
     md += [f"| {r['note']} | {r['target_hz']:.1f} | {r['vision_only_cents']:+.1f} | {r['with_one_tap_cents']:+.1f} |" for r in first["notes"]]
     md.append(f"\n![]({fig})\n")
+
+    # E8-E10 use their own random stream, so E1-E7 above stay exactly reproducible
+    rg = np.random.default_rng(a.seed + 8)
+    print("E8 container shape from the camera ...", flush=True)
+    M["E8_shape_sim"] = e8_shape(rg, 10 if q else 30)
+    md += ["\n## E8 Container shape from the camera (SIMULATED, random glasses: radius 2.5-4.5 cm, height 7-12 cm)\n",
+           "| camera | found | mean radius error | rim radius error | height error | capacity error |", "|---|---|---|---|---|---|"]
+    md += [f"| {k} | {v['found_%']:.0f}% | {v['mean_radius_mae_mm']:.2f} mm | {v['rim_radius_mae_mm']:.2f} mm | "
+           f"{v['height_mae_mm']:.1f} mm | {v['capacity_mape_%']:.1f} % |" for k, v in M["E8_shape_sim"].items()]
+
+    print("E9 a new container from its shape ...", flush=True)
+    nc, ex = e9_new_container(rg, n=6 if q else 8, reps=1 if q else 2)
+    M["E9_new_container_sim"] = nc
+    M["E9_family_example"] = ex
+    md += ["\n## E9 A new container's pitch from its shape (SIMULATED, leave one container out)\n",
+           "French's thin-wall model: empty pitch ~ 1/R^2, water effect ~ R. Two family constants are fitted on the other "
+           f"containers; fitted radius exponent {ex['radius_exponent']:.2f} (theory -2).\n",
+           "| family | " + " | ".join(next(iter(nc.values()))) + " |", "|---|---|---|---|"]
+    md += [f"| {k} | " + " | ".join(f"{e:.1f} cents" for e in v.values()) + " |" for k, v in nc.items()]
+
+    print("E10 water level of an opaque container, by sound ...", flush=True)
+    M["E10_level_from_sound_sim"] = e10_level_from_sound(rg, n=5 if q else 6)
+    lv = M["E10_level_from_sound_sim"]
+    md += ["\n## E10 Hearing the water level of an opaque container (SIMULATED)\n",
+           "One tap on the empty container gives f0, the shape gives beta, then each tap's pitch gives the level.\n",
+           f"Median level error: {100 * lv['fill_mae_above_35%']:.1f} % of the height above 35 % full "
+           f"(90th percentile {100 * lv['fill_p90_above_35%']:.1f} %); {100 * lv['fill_mae_below_30%']:.0f} % below 30 % full, "
+           "where the law is flat and the pitch barely changes.\n"]
 
     json.dump(M, open(C.RESULTS_DIR / "metrics.json", "w"), indent=2, default=lambda o: o if not isinstance(o, np.generic) else o.item())
     (C.RESULTS_DIR / "RESULTS.md").write_text("\n".join(md), encoding="utf-8")
