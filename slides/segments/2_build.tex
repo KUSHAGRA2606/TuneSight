@@ -99,16 +99,19 @@
 \begin{frame}{Hearing: from a tap to a pitch}
     \label{sl:hearing}
     \centering
-    \includegraphics[width=0.80\linewidth]{images/figures/fig_strike.pdf}
-    \vspace{-1mm}
+    \includegraphics[width=0.61\linewidth]{images/figures/fig_strike.pdf}
+    \vspace{-2mm}
     \begin{columns}[T]
     \column{0.47\textwidth}
         \begin{block}{The idea: a source and a filter}
             \scriptsize
-            The tap is a short click (the \emph{source}). The glass rings at a few fixed frequencies, its
-            \emph{modes}, each fading like a bell (the \emph{filter}), the course's model of speech.
-            The note is the lowest strong mode; where you strike changes the timbre, not the pitch.
+            The tap is a short click (the \emph{source}); the glass rings at a few \emph{modes}, each fading
+            like a bell (the \emph{filter}): the course's model of speech. The note is the lowest strong mode;
+            the strike point changes the timbre, not the pitch (below).
         \end{block}
+        \vspace{-1.5mm}
+        \centering
+        \includegraphics[width=0.95\linewidth]{images/figures/fig_strikepoint.pdf}
     \column{0.51\textwidth}
         \scriptsize
         \textbf{Steps}
@@ -185,22 +188,25 @@
         \draw[->] (tap) -- (meas); \draw[->] (meas) -- (pt); \draw[->] (pt) -- (fit); \draw[->] (fit) -- (pred);
         \draw[->, gray] (pred.south) -- ++(0,-0.35) -| node[pos=0.25, below, font=\tiny] {next tap} (tap.south);
     \end{tikzpicture}}
-    \vspace{1mm}
+    \vspace{-4mm}
     \begin{columns}[T]
-    \column{0.55\textwidth}
+    \column{0.37\textwidth}
         \scriptsize
         \begin{itemize}
-            \item \textbf{A straight line:} plotted as $1/f^2$ against $r^n$, the law is linear, so a few points fit it.
+            \item \textbf{A straight line:} plotted as $1/f^2$ against $r^n$, the law is linear (middle, b), so a few points fit it.
             \item \textbf{Start from physics}, then each tap updates the line by Bayesian linear regression
                   \cite{bishop2006pattern}, which also says how sure it is.
-            \item \textbf{The data choose $n$:} the best-supported exponent is $n = \EthreeN$ (theory 4).
+            \item \textbf{The data choose $n$:} $n = \EthreeN$ (theory 4).
             \item \textbf{Assumed noise:} pitch $\pm 8$ cents per tap; water level $\pm 0.6\,\%$ of the height.
         \end{itemize}
-        \vspace{1mm}
-        \textbf{Result:} after 5 taps the camera alone predicts the pitch within \textbf{\EfiveFive\ cents} (right).
-    \column{0.43\textwidth}
+    \column{0.27\textwidth}
         \centering
-        \includegraphics[width=\linewidth]{images/figures/fig_learning.pdf}
+        \includegraphics[width=\linewidth]{images/figures/fig_law_tall.pdf}
+    \column{0.34\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{images/figures/fig_learning.pdf}\\[1mm]
+        \scriptsize\raggedright
+        \textbf{Result:} after 5 taps the camera alone predicts the pitch within \textbf{\EfiveFive\ cents}.
     \end{columns}
 \end{frame}
 
@@ -256,6 +262,14 @@
             \item \textbf{Stop one semitone early:} water is easy to add, hard to remove.
             \item \textbf{Tap once:} how this glass differs from the law; correct, then top up.
         \end{enumerate}
+        \vspace{0.5mm}
+        \begin{minipage}[c]{0.5\linewidth}
+            \includegraphics[width=\linewidth]{images/figures/anim_tune.jpg}
+        \end{minipage}\hfill
+        \begin{minipage}[c]{0.46\linewidth}
+            \raggedright\tiny
+            ManimGL animation (web explainer): step 1 stops a semitone early; one tap measures the offset; step 2 lands on the note.
+        \end{minipage}
     \column{0.44\textwidth}
         \centering
         \includegraphics[width=0.95\linewidth]{images/figures/fig_tuning.pdf}\\[-0.5mm]

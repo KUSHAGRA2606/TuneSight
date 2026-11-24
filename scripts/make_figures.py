@@ -282,19 +282,21 @@ def fig_strikepoint():
     if len(wavs) < 2:
         print("   fig_strikepoint kept (needs ObjectFolder glass #91: scripts/download_objectfolder.py --chunks 91_100)")
         return
-    fig, ax = plt.subplots(figsize=(5.0, 1.75))
+    fig, ax = plt.subplots(figsize=(2.8, 1.22))
     for wv, c, off in zip(wavs, (BLUE, ORANGE), (0.0, -80.0)):
         an = A.analyze_strike(A.load_audio(wv), fmin=150.0)
         band = (an.spec_f > 100) & (an.spec_f < 8000)
         ref = an.mags_db.max()
         ax.plot(an.spec_f[band] / 1000, an.spec_db[band] - ref + off, color=c, lw=0.45, alpha=0.8)
         ax.plot(an.freqs / 1000, an.mags_db - ref + off, "o", ms=3, color=c,
-                label=f"strike point {wv.parent.name}: lowest mode {an.pitch:.0f} Hz, {len(an.freqs)} modes")
+                label=f"point {wv.parent.name}: lowest {an.pitch:.0f} Hz")
         ax.axvline(an.pitch / 1000, color=c, ls="--", lw=0.8)
-    ax.set(xlabel="kHz", ylabel="dB (offset)", xlim=(0, 8), ylim=(-215, 12),
-           title="REAL glass #91, two strike points: same pitch, different upper modes")
+    ax.set(xlim=(0, 8.6), ylim=(-285, 12))
+    ax.set_xticks([0, 2, 4, 6, 8], ["0", "2", "4", "6", "8 kHz"])
+    ax.set_ylabel("dB", labelpad=2)
+    ax.set_title("REAL glass #91: two strike points, one pitch", fontsize=6.8)
     ax.set_yticks([])
-    ax.legend(loc="lower right", frameon=False, fontsize=6, ncol=2, borderaxespad=0.1)
+    ax.legend(loc="lower center", frameon=False, fontsize=5.6, ncol=2, borderaxespad=0.1, columnspacing=1.0, handletextpad=0.3)
     fig.tight_layout()
     save(fig, "fig_strikepoint", web=False)
 
@@ -546,6 +548,29 @@ def fig_hearlevel(M):
     save(fig, "fig_hearlevel")
 
 
+def fig_resolution():
+    """How precisely one tap (pitch varies by +-8 cents) pins the water level, at each fill: the dead zone."""
+    rr = np.linspace(0.06, 0.95, 300)
+    fig, ax = plt.subplots(figsize=(2.6, 1.95))
+    edge = None
+    for R, col in ((2.6, ORANGE), (3.5, GREEN), (4.4, PURPLE)):
+        beta = G.french_beta(R, 1.5)
+        res = C.PITCH_NOISE_CENTS / G.cents_per_percent_fill(rr, beta)          # % of the height
+        ax.plot(rr, res, color=col, lw=1.4, label=f"R = {R} cm")
+        if R == 3.5:
+            edge = float(rr[np.argmax(res < 10)])
+    ax.axvspan(0, edge, color=RED, alpha=0.08, lw=0)
+    ax.axhline(10, color=GREY, ls=":", lw=0.9)
+    ax.text(0.29, 11.5, "10 % of the height", fontsize=5.6, color=GREY, ha="left", va="bottom")
+    ax.text(0.93, 0.13, "wider glass: hears better", fontsize=5.6, color=NAVY, ha="right", va="bottom")
+    ax.text(edge / 2, 0.16, "dead\nzone", fontsize=5.8, color=RED, ha="center", va="bottom")
+    ax.set(yscale="log", ylim=(0.1, 300), xlim=(0, 0.95), xlabel="water level h/H",
+           ylabel="level error from one tap (% of H)", title="where one tap can read the level")
+    ax.legend(loc="upper right", frameon=False, fontsize=5.8)
+    fig.tight_layout()
+    save(fig, "fig_resolution", web=False)
+
+
 def write_numbers(M):
     """LaTeX macros with every number quoted on the slides, taken from metrics.json (no hand-copied numbers)."""
     def g(path, default=float("nan")):
@@ -583,6 +608,7 @@ def write_numbers(M):
         "EfourClean": f"{g(['E4_vision_sim', 'clean', 'fill_mae']):.3f}",
         "EfourBlur": f"{g(['E4_vision_sim', 'blur 4px', 'fill_mae']):.3f}",
         "EfourClear": f"{g(['E4_vision_sim', 'clear water', 'fill_mae']):.3f}",
+        "EfourFoundSix": f"{g(['E4_vision_sim', 'blur 6px', 'level_found_%']):.0f}",
         # beyond identical glasses (E8-E10)
         "EeightR": f"{g(['E8_shape_sim', '18 px/cm', 'mean_radius_mae_mm']):.1f}",
         "EeightRfar": f"{g(['E8_shape_sim', '12 px/cm', 'mean_radius_mae_mm']):.1f}",
@@ -616,7 +642,8 @@ def copy_assets():
     if shot.exists():
         shutil.copy(shot, dst / shot.name)
         shutil.copy(shot, PNG_DIR / shot.name)
-    for name, out in (("WhichBowl.jpg", "anim_which.jpg"), ("TuneBySight.jpg", "anim_tune.jpg")):   # ManimGL stills on slides
+    for name, out in (("WhichBowl.jpg", "anim_which.jpg"), ("TuneBySight.jpg", "anim_tune.jpg"),
+                      ("AnyContainer.jpg", "anim_any.jpg")):   # ManimGL stills on slides
         src = ROOT / "web" / "media" / name
         if src.exists():
             shutil.copy(src, dst / out)
@@ -641,6 +668,7 @@ def main():
     fig_family(M)
     fig_newcontainer(M)
     fig_hearlevel(M)
+    fig_resolution()
     write_numbers(M)
     copy_assets()
     print(f"done -> {PDF_DIR}, {PNG_DIR}, slides/images/figures")

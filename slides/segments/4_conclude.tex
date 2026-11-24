@@ -2,7 +2,7 @@
 \begin{frame}{What I learned: course concepts and lessons}
     \label{sl:concepts}
     \begin{columns}[T]
-    \column{0.54\textwidth}
+    \column{0.53\textwidth}
         \scriptsize
         \textbf{Course concepts at work}\\[1mm]
         \renewcommand{\arraystretch}{1.12}
@@ -16,15 +16,24 @@
             \tagM & Cue reliability, inverse effectiveness & \pageref{sl:fusion}\\
         \end{tabular}\\[1mm]
         {\tiny \tagS{} sound \ \tagV{} images \ \tagM{} multimodal learning\par}
-    \column{0.44\textwidth}
-        \scriptsize
-        \textbf{Lessons}
+    \column{0.45\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{images/figures/fig_robust.pdf}\\[-0.5mm]
+        {\tiny Blur, not darkness or noise, breaks the water line: at 6~px blur only \EfourFoundSix\,\% of levels are found.\par}
+    \end{columns}
+    \vspace{1.5mm}
+    \scriptsize
+    \textbf{Lessons}
+    \begin{columns}[T]
+    \column{0.5\textwidth}
         \begin{enumerate}
-            \item \textbf{A law beats a dataset:} 5 taps give \EfiveFive~cents; a black box would need many labelled strikes.
-            \item \textbf{Physics generalises:} the same law, with the shape, predicts glasses never tapped.
+            \item \textbf{A law beats a dataset:} 5 taps give \EfiveFive~cents.
+            \item \textbf{Physics generalises:} the shape predicts glasses never tapped.
+        \end{enumerate}
+    \column{0.48\textwidth}
+        \begin{enumerate}\setcounter{enumi}{2}
             \item \textbf{Fusion pays where a sense is weak:} at 0~dB, \EsixAudioZero\,\% $\to$ \EsixFusedZero\,\%.
-            \item \textbf{Two clocks, one event:} align video to the audio onset; read the water before the strike.
-            \item \textbf{Simulate with ground truth first}, then check on real recordings.
+            \item \textbf{Read the water before the strike}, and align both clocks on the audio onset.
         \end{enumerate}
     \end{columns}
 \end{frame}
@@ -55,27 +64,33 @@
 \begin{frame}{Reflections (b): scope for improvement}
     \label{sl:improve}
     \centering
-    \resizebox{\linewidth}{!}{%
+    \resizebox{0.94\linewidth}{!}{%
     \begin{tikzpicture}[>={Stealth[length=2.5mm]}]
         \node[road=fusc] (r1) at (0, 0) {\textcolor{fusc}{\textbf{Next: real data}}\\[4pt]
-            $\bullet$ Record real glasses of several sizes and check the $1/R^2$ law on them\\[3pt]
-            $\bullet$ A full session with a musician; ruler checks of level and radius};
+            $\bullet$ Real glasses of several sizes: check the $1/R^2$ law\\[3pt]
+            $\bullet$ A session with a musician; ruler checks};
         \node[road=camc] (r2) at (3.75, 0) {\textcolor{camc}{\textbf{Then: harder scenes}}\\[4pt]
-            $\bullet$ Wall thickness from \emph{sound}: the ratio of two ring frequencies depends on it\\[3pt]
-            $\bullet$ Two strikers and overlapping notes: multi-pitch analysis\\[3pt]
-            $\bullet$ Porcelain bowls: top-view camera plus hearing the level};
+            $\bullet$ Wall thickness from \emph{sound} (ratio of two ring frequencies)\\[3pt]
+            $\bullet$ Two strikers: multi-pitch analysis};
         \node[road=phyc] (r3) at (7.5, 0) {\textcolor{phyc!75!black}{\textbf{Later: beyond music}}\\[4pt]
-            $\bullet$ Closed-loop tuning with a small pump\\[3pt]
-            $\bullet$ A phone app: camera and mic in one device\\[3pt]
-            $\bullet$ ``Tap and look'' level checks for rows of bottles or tanks};
-        \foreach \x in {0, 3.75} \draw[->, thick, gray] (\x + 1.73, -1.0) -- (\x + 2.02, -1.0);
+            $\bullet$ Closed-loop tuning with a pump\\[3pt]
+            $\bullet$ ``Tap and look'' level checks for bottles and tanks};
+        \foreach \x in {0, 3.75} \draw[->, thick, gray] (\x + 1.73, -0.8) -- (\x + 2.02, -0.8);
     \end{tikzpicture}}
-    \vspace{2mm}
-    \begin{alertblock}{Honest limitations today}
-        \scriptsize
-        Most results are simulated with known ground truth; the real audio is two ObjectFolder strikes of one glass, so the
-        shape law ($f_0 \propto 1/R^2$) is checked only in simulation. LPC damping degrades with noise (1.4\,\% error at 40~dB, 54\,\% at 20~dB).
-    \end{alertblock}
+    \vspace{1mm}
+    \begin{columns}[T]
+    \column{0.55\textwidth}
+        \begin{alertblock}{Honest limitations today}
+            \scriptsize
+            Most results are simulated with known ground truth; the real audio is two ObjectFolder strikes of one glass,
+            so the shape law ($f_0 \propto 1/R^2$) is checked only in simulation.\\[2pt]
+            Near empty a tap cannot read the level (right): the law is flat there, so opaque cups need water above about a quarter.\\[2pt]
+            LPC damping degrades with noise (1.4\,\% error at 40~dB, 54\,\% at 20~dB).
+        \end{alertblock}
+    \column{0.43\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{images/figures/fig_resolution.pdf}
+    \end{columns}
 \end{frame}
 
 % ------------------------------------------------------------------ live demo and conclusion
